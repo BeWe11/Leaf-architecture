@@ -2,4 +2,6 @@
 .ipynb_checkpoints
 .png
 __pycache__
+*.swp
+*.pyc
 Test code
