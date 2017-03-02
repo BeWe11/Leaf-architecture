@@ -1,102 +1,102 @@
-BronxB_001 	Protium wanningianum
-BronxB_002 	Protium sp. nov. 8
-BronxB_003 	Protium pittieri
-BronxB_004 	Protium crassipetalum
-BronxB_005 	Tetragastris hostmanii
-BronxB_006 	Protium panamense
-BronxB_007 	Protium pallidum
-BronxB_008 	Protium pallidum
-BronxB_009 	Protium paniculatum
-BronxB_010 	Bursera cinerea
-BronxB_011 	Protium tenuifolium
-BronxB_012 	Protium sp. nov. 3 aff. P. warmingianum
-BronxB_013 	Protium nodulosum
-BronxB_015 	Protium neglectum
-BronxB_016 	Bursera hollikii
-BronxB_017 	Bursera lunanii
-BronxB_018 	Protium madagascariense
-BronxB_019 	Canarium pulchrebracteatun
-BronxB_020 	Canarium pilicarpum
-BronxB_021 	Protium subserratum
-BronxB_022 	Protium nitidifolium
-BronxB_023 	Protium nervosum
-BronxB_024 	Protium klugii
-BronxB_025 	Canarium planifolium
-BronxB_026 	Bursera aromatica
-BronxB_027 	Protium polybotryum
-BronxB_028 	Protium glabrurm
-BronxB_030 	Protium rynchophyllum
-BronxB_031 	Protium tovarense
-BronxB_032 	Protium llanorum
-BronxB_033 	Protium mcleodii
-BronxB_034 	Protium crenatum
-BronxB_035 	Protium multiramiflorum
-BronxB_036 	Protium sp. nov. 7
-BronxB_037 	Protium sp. nov. aff. P. montanum
-BronxB_038 	Protium sp. nov. 10
-BronxB_039 	Protium subserratum
-BronxB_040 	Protium subserratum
-BronxB_041 	Bursera inversa
-BronxB_042 	Protium strumosum
-BronxB_043 	Protium sagotianum
-BronxB_045 	Protium sp. nov. 14
-BronxB_046 	Protium occultum
-BronxB_047 	Protium demerarense
-BronxB_048 	Protium sp. nov. 9
-BronxB_049 	Protium subserratum "lobo"
-BronxB_050 	Protium reticulatum
-BronxB_051 	Protium ravenii
-BronxB_052 	Bursera aromatica
-BronxB_053 	Protium divaricatum
-BronxB_054 	Protium gallosum
-BronxB_055 	Protium krukovii
-BronxB_056 	Protium sp. nov. 6
-BronxB_057 	Protium sp. nov. 4
-BronxB_058 	Protium sp. nov. 11
-BronxB_014 	Canarium betamporae
-BronxB_029 	Protium inodorum
-BronxB_044 	Protium alvarezianum
-BronxB_059 	Protium laxiflorum
-BronxB_074 	Protium divaricatum
-BronxB_060 	Protium hebetatum
-BronxB_061 	Protium plagiocrpium
-BronxB_062 	Canarium multiflorum
-BronxB_063 	Canarium obtusifolium
-BronxB_064 	Protium decandrum
-BronxB_065 	Canarium nitidifolium
-BronxB_066 	Protium sp. nov. 13
-BronxB_067 	Protium morii
-BronxB_068 	Protium urophyllidium
-BronxB_069 	Protium sp. nov. 5
-BronxB_070 	Protium grandifolium
-BronxB_071 	Protium puncticulatum
-BronxB_072 	Protium glabrescens
-BronxB_073 	Canarium scholasticum
-BronxB_075 	Protium ferrugineum
-BronxB_076 	Canarium galokense
-BronxB_077 	Protium sp. nov. 1
-BronxB_078 	Protium heptaphyllum
-BronxB_079 	Protium nervosum
-BronxB_080 	Protium sp. nov. 13
-BronxB_081 	Protium nodulosum
-BronxB_082 	Protium pittieri
-BronxB_083 	Protium copal
-BronxB_084 	Protium icicariba
-BronxB_085 	Protium subacuminatum
-BronxB_086 	Protium guianense
-BronxB_087 	Protium subacuminatum
-BronxB_088 	Protium icicariba
-BronxB_089 	Protium sprumanum
-BronxB_090 	Protium unifolioiatum
-BronxB_091 	Protium serratum
-BronxB_092 	Protium heptaphyllum
-BronxB_093 	Protium beandou
-BronxB_094 	Protium opacum subs. opacum
-BronxB_095 	Protium glaziovii
-BronxB_096 	Protium glomerulosum
-BronxB_097 	Canarium arcuatum
-BronxB_098 	Protium obtusifolium
-BronxB_099 	Protium sp. nov. 12
-BronxB_100 	Bursera glabrifolia
-BronxB_101 	Protium sp. nov. aff. P. montanum
-BronxB_102 	Protium bahianum
+BronxB 001 	Protium wanningianum
+BronxB 002 	Protium sp. nov. 8
+BronxB 003 	Protium pittieri
+BronxB 004 	Protium crassipetalum
+BronxB 005 	Tetragastris hostmanii
+BronxB 006 	Protium panamense
+BronxB 007 	Protium pallidum
+BronxB 008 	Protium pallidum
+BronxB 009 	Protium paniculatum
+BronxB 010 	Bursera cinerea
+BronxB 011 	Protium tenuifolium
+BronxB 012 	Protium sp. nov. 3 aff. P. warmingianum
+BronxB 013 	Protium nodulosum
+BronxB 015 	Protium neglectum
+BronxB 016 	Bursera hollikii
+BronxB 017 	Bursera lunanii
+BronxB 018 	Protium madagascariense
+BronxB 019 	Canarium pulchrebracteatun
+BronxB 020 	Canarium pilicarpum
+BronxB 021 	Protium subserratum
+BronxB 022 	Protium nitidifolium
+BronxB 023 	Protium nervosum
+BronxB 024 	Protium klugii
+BronxB 025 	Canarium planifolium
+BronxB 026 	Bursera aromatica
+BronxB 027 	Protium polybotryum
+BronxB 028 	Protium glabrurm
+BronxB 030 	Protium rynchophyllum
+BronxB 031 	Protium tovarense
+BronxB 032 	Protium llanorum
+BronxB 033 	Protium mcleodii
+BronxB 034 	Protium crenatum
+BronxB 035 	Protium multiramiflorum
+BronxB 036 	Protium sp. nov. 7
+BronxB 037 	Protium sp. nov. aff. P. montanum
+BronxB 038 	Protium sp. nov. 10
+BronxB 039 	Protium subserratum
+BronxB 040 	Protium subserratum
+BronxB 041 	Bursera inversa
+BronxB 042 	Protium strumosum
+BronxB 043 	Protium sagotianum
+BronxB 045 	Protium sp. nov. 14
+BronxB 046 	Protium occultum
+BronxB 047 	Protium demerarense
+BronxB 048 	Protium sp. nov. 9
+BronxB 049 	Protium subserratum "lobo"
+BronxB 050 	Protium reticulatum
+BronxB 051 	Protium ravenii
+BronxB 052 	Bursera aromatica
+BronxB 053 	Protium divaricatum
+BronxB 054 	Protium gallosum
+BronxB 055 	Protium krukovii
+BronxB 056 	Protium sp. nov. 6
+BronxB 057 	Protium sp. nov. 4
+BronxB 058 	Protium sp. nov. 11
+BronxB 014 	Canarium betamporae
+BronxB 029 	Protium inodorum
+BronxB 044 	Protium alvarezianum
+BronxB 059 	Protium laxiflorum
+BronxB 074 	Protium divaricatum
+BronxB 060 	Protium hebetatum
+BronxB 061 	Protium plagiocrpium
+BronxB 062 	Canarium multiflorum
+BronxB 063 	Canarium obtusifolium
+BronxB 064 	Protium decandrum
+BronxB 065 	Canarium nitidifolium
+BronxB 066 	Protium sp. nov. 13
+BronxB 067 	Protium morii
+BronxB 068 	Protium urophyllidium
+BronxB 069 	Protium sp. nov. 5
+BronxB 070 	Protium grandifolium
+BronxB 071 	Protium puncticulatum
+BronxB 072 	Protium glabrescens
+BronxB 073 	Canarium scholasticum
+BronxB 075 	Protium ferrugineum
+BronxB 076 	Canarium galokense
+BronxB 077 	Protium sp. nov. 1
+BronxB 078 	Protium heptaphyllum
+BronxB 079 	Protium nervosum
+BronxB 080 	Protium sp. nov. 13
+BronxB 081 	Protium nodulosum
+BronxB 082 	Protium pittieri
+BronxB 083 	Protium copal
+BronxB 084 	Protium icicariba
+BronxB 085 	Protium subacuminatum
+BronxB 086 	Protium guianense
+BronxB 087 	Protium subacuminatum
+BronxB 088 	Protium icicariba
+BronxB 089 	Protium sprumanum
+BronxB 090 	Protium unifolioiatum
+BronxB 091 	Protium serratum
+BronxB 092 	Protium heptaphyllum
+BronxB 093 	Protium beandou
+BronxB 094 	Protium opacum subs. opacum
+BronxB 095 	Protium glaziovii
+BronxB 096 	Protium glomerulosum
+BronxB 097 	Canarium arcuatum
+BronxB 098 	Protium obtusifolium
+BronxB 099 	Protium sp. nov. 12
+BronxB 100 	Bursera glabrifolia
+BronxB 101 	Protium sp. nov. aff. P. montanum
+BronxB 102 	Protium bahianum

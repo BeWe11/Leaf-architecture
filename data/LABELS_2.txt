@@ -1,144 +1,144 @@
-BronxA_001 	Protium grandifolium
-BronxA_002 	Protium ovatum
-BronxA_003 	Bursera ovata
-BronxA_004 	Bursera shaferi
-BronxA_005 	Protium dawsonii
-BronxA_006 	Bursera simaruba
-BronxA_007 	Protium aracouchini
-BronxA_008 	Protium altsonii
-BronxA_009 	Bursera gracilipes
-BronxA_010 	Bursera gracilipes
-BronxA_011 	Bursera cf. inaguensis
-BronxA_012 	Bursera gibarensis
-BronxA_013 	Bursera glauca
-BronxA_014 	Bursera spinescens
-BronxA_016 	Protium calanense
-BronxA_017 	Bursera ovalifolia
-BronxA_018 	Protium copal
-BronxA_019 	Protium calanense
-BronxA_020 	Bursera ovalifolia
-BronxA_021 	Protium aracouchini
-BronxA_022 	Bursera shaferi
-BronxA_023 	Protium altsonii
-BronxA_024 	Protium leptostachyum
-BronxA_025 	Protium pilosum
-BronxA_026 	Tetragastris breviacuminata
-BronxA_027 	Crepidospermum atlanticum
-BronxA_028 	Bursera inaguensis
-BronxA_029 	Bursera simaruba
-BronxA_031 	Protium ptarianum
-BronxA_032 	Protium rubrum
-BronxA_033 	Protium confusum
-BronxA_034 	Bursera lunanii
-BronxA_035 	Protium gallicum
-BronxA_036 	Protium altsonii
-BronxA_037 	Protium elegans
-BronxA_038 	Protium cuneatum
-BronxA_039	Protium divaricatum subs. krukofii
-BronxA_040 	Protium glaucescens
-BronxA_041 	Protium guianense
-BronxA_042 	Protium giganteum
-BronxA_043 	Protium attenuatum
-BronxA_044 	Protium trifoliolatum
-BronxA_046 	Protium apiculatum
-BronxA_047 	Protium camosum
-BronxA_048 	Protium carolense
-BronxA_049 	Protium connarifolium
-BronxA_050 	Dacryodes belemensis
-BronxA_051 	Bursera attenuate
-BronxA_052 	Tetragastris occhionii
-BronxA_053 	Pouteria filipe
-BronxA_054 	Pouteria torta
-BronxA_055 	Pouteria glomerata
-BronxA_056 	Bowdichia nitida
-BronxA_057 	Andira macrothrysa
-BronxA_062 	Apuleia leiocarpa
-BronxA_063 	Diploon cuspidatum
-BronxA_015 	Commiphora leptophloeos
-BronxA_030 	Protium brasiliense
-BronxA_045 	Protium cubense
-BronxA_064 	Brosimum guianensis
-BronxA_079 	Cordia alliodora
-BronxA_094 	Cordia sellowiana
-BronxA_112 	Qualea grandiflora
-BronxA_127 	Unknown species 1
-BronxA_065 	Hymenaea parvifolia
-BronxA_066 	Schizolobium amazonicum
-BronxA_067 	Brosimum guianensis
-BronxA_068 	Hymenaea parvifolia
-BronxA_069 	Ocotea sp. 1
-BronxA_070 	Apuleia leiocarpa
-BronxA_071 	Apuleia leiocarpa
-BronxA_072 	Dipteryx ferrea
-BronxA_073 	Jacaranda copaia
-BronxA_074 	Parkia pendula
-BronxA_075 	Cedrela odorata
-BronxA_076 	Pouteria coriaceae
-BronxA_077 	Clarisia racemosa
-BronxA_078 	Eschweilera sp.
-BronxA_080 	Eschweilera truncata
-BronxA_081 	Tabebuia serratifolia
-BronxA_082 	Swartzia jorori
-BronxA_083 	Eriotheca globosa
-BronxA_084 	Licania cuspidata
-BronxA_085 	Protium heptaphyllum
-BronxA_086 	Astronium lecointei
-BronxA_087 	Walsura sp. 1
-BronxA_088 	Dalbergia miscolobium
-BronxA_089 	Terminalia oblonga
-BronxA_090 	Terminalia oblonga
-BronxA_091 	Schefflera morototoni
-BronxA_092 	Dipteryx alata
-BronxA_093 	Dipteryx ferrea
-BronxA_096 	Citronela melliodora
-BronxA_098 	Dipteryx odorata
-BronxA_099 	Dipteryx odorata
-BronxA_100 	Pouteria triloculares
-BronxA_101 	Eschweilera fracta
-BronxA_102 	Eriotheca globosa
-BronxA_103 	Aspidosperma parvifolium
-BronxA_104 	Diallium guianensis
-BronxA_105 	Clarisia biflora
-BronxA_106 	Batocarpus amazonicus
-BronxA_107 	Walsura sp. 2
-BronxA_108 	Jacaranda copaia
-BronxA_109 	Dalbergia miscolobium
-BronxA_110 	Aspidosperma parvifolium
-BronxA_113 	Miroxylon balsamum
-BronxA_114 	Parkia pendula
-BronxA_115 	Parkia nitida
-BronxA_116 	Diploon cuspidatum
-BronxA_117 	Pouteria nutipetala
-BronxA_118 	Swartzia jorori
-BronxA_119 	Cedrela odorata
-BronxA_120 	Brosimum guianensis
-BronxA_121 	Ocotea sp. 2
-BronxA_122 	Tetragastris altissima
-BronxA_123 	Tabebuia serratifolia
-BronxA_124 	Nectandra cuspidata
-BronxA_125 	Schizolobium amazonicum
-BronxA_126 	Bursera simaruba
-BronxA_128 	Qualea grandiflora
-BronxA_129 	Unknown species 2
-BronxA_130 	Parkia nitida
-BronxA_131 	Enterolobium sp. 1
-BronxA_132 	Unknown species 3
-BronxA_133 	Nectandra cuspidata
-BronxA_134 	Apuleia leiocarpa
-BronxA_135 	Enterolobium sp. 2
-BronxA_136 	Parkia nitida
-BronxA_137 	Enterolobium sp. 3
-BronxA_138 	Erisma sp. 
-BronxA_140 	Parkia pendula
-BronxA_141 	Parkia nitida
-BronxA_142 	Enterolobium sp. 4
-BronxA_143 	Parkia pendula
-BronxA_144 	Enterolobium sp. 5
-BronxA_145 	Parkia nitida
-BronxA_146 	Piptadenia sp.
-BronxA_147 	Enterolobium sp. 6
-BronxA_148 	Enterolobium sp. 7
-BronxA_111	Unknown species 4
-BronxA_095	Unknown species 5
-BronxA_097	Unknown species 6
-BronxA_139	Unknown species 7
+BronxA 001 	Protium grandifolium
+BronxA 002 	Protium ovatum
+BronxA 003 	Bursera ovata
+BronxA 004 	Bursera shaferi
+BronxA 005 	Protium dawsonii
+BronxA 006 	Bursera simaruba
+BronxA 007 	Protium aracouchini
+BronxA 008 	Protium altsonii
+BronxA 009 	Bursera gracilipes
+BronxA 010 	Bursera gracilipes
+BronxA 011 	Bursera cf. inaguensis
+BronxA 012 	Bursera gibarensis
+BronxA 013 	Bursera glauca
+BronxA 014 	Bursera spinescens
+BronxA 016 	Protium calanense
+BronxA 017 	Bursera ovalifolia
+BronxA 018 	Protium copal
+BronxA 019 	Protium calanense
+BronxA 020 	Bursera ovalifolia
+BronxA 021 	Protium aracouchini
+BronxA 022 	Bursera shaferi
+BronxA 023 	Protium altsonii
+BronxA 024 	Protium leptostachyum
+BronxA 025 	Protium pilosum
+BronxA 026 	Tetragastris breviacuminata
+BronxA 027 	Crepidospermum atlanticum
+BronxA 028 	Bursera inaguensis
+BronxA 029 	Bursera simaruba
+BronxA 031 	Protium ptarianum
+BronxA 032 	Protium rubrum
+BronxA 033 	Protium confusum
+BronxA 034 	Bursera lunanii
+BronxA 035 	Protium gallicum
+BronxA 036 	Protium altsonii
+BronxA 037 	Protium elegans
+BronxA 038 	Protium cuneatum
+BronxA 039	Protium divaricatum subs. krukofii
+BronxA 040 	Protium glaucescens
+BronxA 041 	Protium guianense
+BronxA 042 	Protium giganteum
+BronxA 043 	Protium attenuatum
+BronxA 044 	Protium trifoliolatum
+BronxA 046 	Protium apiculatum
+BronxA 047 	Protium camosum
+BronxA 048 	Protium carolense
+BronxA 049 	Protium connarifolium
+BronxA 050 	Dacryodes belemensis
+BronxA 051 	Bursera attenuate
+BronxA 052 	Tetragastris occhionii
+BronxA 053 	Pouteria filipe
+BronxA 054 	Pouteria torta
+BronxA 055 	Pouteria glomerata
+BronxA 056 	Bowdichia nitida
+BronxA 057 	Andira macrothrysa
+BronxA 062 	Apuleia leiocarpa
+BronxA 063 	Diploon cuspidatum
+BronxA 015 	Commiphora leptophloeos
+BronxA 030 	Protium brasiliense
+BronxA 045 	Protium cubense
+BronxA 064 	Brosimum guianensis
+BronxA 079 	Cordia alliodora
+BronxA 094 	Cordia sellowiana
+BronxA 112 	Qualea grandiflora
+BronxA 127 	Unknown species 1
+BronxA 065 	Hymenaea parvifolia
+BronxA 066 	Schizolobium amazonicum
+BronxA 067 	Brosimum guianensis
+BronxA 068 	Hymenaea parvifolia
+BronxA 069 	Ocotea sp. 1
+BronxA 070 	Apuleia leiocarpa
+BronxA 071 	Apuleia leiocarpa
+BronxA 072 	Dipteryx ferrea
+BronxA 073 	Jacaranda copaia
+BronxA 074 	Parkia pendula
+BronxA 075 	Cedrela odorata
+BronxA 076 	Pouteria coriaceae
+BronxA 077 	Clarisia racemosa
+BronxA 078 	Eschweilera sp.
+BronxA 080 	Eschweilera truncata
+BronxA 081 	Tabebuia serratifolia
+BronxA 082 	Swartzia jorori
+BronxA 083 	Eriotheca globosa
+BronxA 084 	Licania cuspidata
+BronxA 085 	Protium heptaphyllum
+BronxA 086 	Astronium lecointei
+BronxA 087 	Walsura sp. 1
+BronxA 088 	Dalbergia miscolobium
+BronxA 089 	Terminalia oblonga
+BronxA 090 	Terminalia oblonga
+BronxA 091 	Schefflera morototoni
+BronxA 092 	Dipteryx alata
+BronxA 093 	Dipteryx ferrea
+BronxA 096 	Citronela melliodora
+BronxA 098 	Dipteryx odorata
+BronxA 099 	Dipteryx odorata
+BronxA 100 	Pouteria triloculares
+BronxA 101 	Eschweilera fracta
+BronxA 102 	Eriotheca globosa
+BronxA 103 	Aspidosperma parvifolium
+BronxA 104 	Diallium guianensis
+BronxA 105 	Clarisia biflora
+BronxA 106 	Batocarpus amazonicus
+BronxA 107 	Walsura sp. 2
+BronxA 108 	Jacaranda copaia
+BronxA 109 	Dalbergia miscolobium
+BronxA 110 	Aspidosperma parvifolium
+BronxA 113 	Miroxylon balsamum
+BronxA 114 	Parkia pendula
+BronxA 115 	Parkia nitida
+BronxA 116 	Diploon cuspidatum
+BronxA 117 	Pouteria nutipetala
+BronxA 118 	Swartzia jorori
+BronxA 119 	Cedrela odorata
+BronxA 120 	Brosimum guianensis
+BronxA 121 	Ocotea sp. 2
+BronxA 122 	Tetragastris altissima
+BronxA 123 	Tabebuia serratifolia
+BronxA 124 	Nectandra cuspidata
+BronxA 125 	Schizolobium amazonicum
+BronxA 126 	Bursera simaruba
+BronxA 128 	Qualea grandiflora
+BronxA 129 	Unknown species 2
+BronxA 130 	Parkia nitida
+BronxA 131 	Enterolobium sp. 1
+BronxA 132 	Unknown species 3
+BronxA 133 	Nectandra cuspidata
+BronxA 134 	Apuleia leiocarpa
+BronxA 135 	Enterolobium sp. 2
+BronxA 136 	Parkia nitida
+BronxA 137 	Enterolobium sp. 3
+BronxA 138 	Erisma sp. 
+BronxA 140 	Parkia pendula
+BronxA 141 	Parkia nitida
+BronxA 142 	Enterolobium sp. 4
+BronxA 143 	Parkia pendula
+BronxA 144 	Enterolobium sp. 5
+BronxA 145 	Parkia nitida
+BronxA 146 	Piptadenia sp.
+BronxA 147 	Enterolobium sp. 6
+BronxA 148 	Enterolobium sp. 7
+BronxA 111	Unknown species 4
+BronxA 095	Unknown species 5
+BronxA 097	Unknown species 6
+BronxA 139	Unknown species 7
