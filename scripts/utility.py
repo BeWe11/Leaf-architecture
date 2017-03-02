@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 import csv
 import os
 
@@ -115,3 +116,78 @@ def get_nesting_numbers(tree):
     nesting_number_no_ext = 1 - tree_asymmetry_no_ext
 
     return nesting_number, nesting_number_no_ext
+
+
+def PolyArea(x, y):
+    """
+    Calculate the area of an arbitrary polygon.
+    """
+    return 0.5 * (np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))))
+
+
+#Function recieves the nx.Graph generated
+def get_total_leaf_area(G):
+    """
+    This function calculates each invidual basis cycle area, adds all the areas and
+    returns the total sum, which corresponds to the leaf area
+    """
+    basis_cycles = nx.cycle_basis(G, 1)   #Each list has node indices representing one basis cycle
+    no_basis_cycles = len(basis_cycles)
+    node_positions = nx.get_node_attributes(G,'pos')
+
+    coordinates = np.empty((no_basis_cycles, 0)).tolist()  #Lists of individual cycles containing node positions (x,y)
+
+    i = 0
+    for cycle in basis_cycles:
+        for node in cycle:
+            coordinates[i].append(node_positions[node])  #Append node positions by looking at pos[index] returs tuple (x,y)
+        i+=1
+
+
+    X = np.zeros((no_basis_cycles, 0)).tolist()  #Separate coordinates into X-Y arrays
+    Y = np.zeros((no_basis_cycles, 0)).tolist()
+
+    j = 0
+    for item3 in coordinates:
+        #item4 is a tuple: (x,y) --> item[0],item[1]
+        for item4 in item3:
+            X[j].append(item4[0])
+            Y[j].append(item4[1])
+        j+=1
+
+
+    cycle_areas = np.zeros(no_basis_cycles)   #Store polygon areas
+
+
+    k=0
+    for item5 in cycle_areas:
+        cycle_areas[k] = PolyArea(X[k],Y[k])  #Function call: Compute single cycle (polygon) area
+        k+=1
+
+    total_leaf_area = sum(cycle_areas)
+    return total_leaf_area
+
+
+def get_total_vein_length(G):
+    sum_vein = 0
+    for edge in G.edges():
+        sum_vein += G.get_edge_data(*edge)['length']   #With * python unpacks the tuple
+    return sum_vein
+
+
+def get_vein_density(G):
+    total_vein_length = get_total_vein_length(G)
+    total_leaf_area = get_total_leaf_area(G)
+    return total_vein_length / total_leaf_area
+
+
+# It's not necessary to make a function for this, just use this dictionary like
+# 'species = species_from_id[network_id]'
+species_from_id = {}
+for k in [1, 2]:
+    with open('data/LABELS_{}_FIXED.txt'.format(k)) as file:   #BronxB LABEL1, BronxA LABEL2
+        reader = csv.reader(file, delimiter='\t')  #Works with elements as strings
+        for row in reader:
+            network_id = row[0].strip()
+            spec = row[1]
+            species_from_id[network_id] = spec
