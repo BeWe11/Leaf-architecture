@@ -6,7 +6,8 @@ import os
 from scripts.decomposer import sorted_connected_components, \
                        remove_intersecting_edges, \
                        prune_graph, \
-                       apply_workaround
+                       apply_workaround, \
+                       hierarchical_decomposition
 
 from scripts.analyzer import analyze_tree
 
@@ -107,7 +108,12 @@ def graph_generator():
             yield graph_from_data(node_path, edge_path)
 
 
-def get_nesting_numbers(tree):
+def get_nesting_numbers(G):
+    """
+    Calculate nesting number for a *cleaned graph*, which means that
+    'clean_graph' has been applied to G.
+    """
+    tree, _, _ = hierarchical_decomposition(G)
     horton_strahler, shreve, marked_tree, tree_no_ext, \
     marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
     areas = analyze_tree(tree)
