@@ -186,6 +186,15 @@ def get_vein_density(G):
     total_leaf_area = get_total_leaf_area(G)
     return total_vein_length / total_leaf_area
 
+def get_areole_density(G):
+    """
+    Individual basic cycles forming G are obtained using nx.cycle_basis
+    """
+    basis_cycles = nx.cycle_basis(G, 1)   #Each list has node indices representing one basis cycle
+    no_basis_cycles = len(basis_cycles)
+    total_leaf_area = get_total_leaf_area(G)
+    return no_basis_cycles/total_leaf_area
+
 
 # It's not necessary to make a function for this, just use this dictionary like
 # 'species = species_from_id[network_id]'
