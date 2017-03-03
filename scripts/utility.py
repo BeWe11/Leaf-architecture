@@ -195,6 +195,18 @@ def get_areole_density(G):
     total_leaf_area = get_total_leaf_area(G)
     return no_basis_cycles/total_leaf_area
 
+def get_weighted_vein_thickness(G):
+    """
+    Weighted vein thickness is calculated as the total sum of the product radius(weight)*length of each
+    individual vein segment divided by total vein length
+    """
+    total_vein_length = get_total_vein_length(G)
+    individual_weighted_vein_thickness = 0
+    for edge in G.edges():
+        individual_weighted_vein_thickness += G.get_edge_data(*edge)['weight']*G.get_edge_data(*edge)['length']  #vein_thickness*vein_length
+    weighted_vein_thickness = individual_weighted_vein_thickness/total_vein_length
+    return weighted_vein_thickness
+
 
 # It's not necessary to make a function for this, just use this dictionary like
 # 'species = species_from_id[network_id]'
