@@ -208,13 +208,14 @@ def get_weighted_vein_thickness(G):
     return weighted_vein_thickness
 
 
-# It's not necessary to make a function for this, just use this dictionary like
-# 'species = species_from_id[network_id]'
-species_from_id = {}
+species_dict = {}
 for k in [1, 2]:
     with open('data/LABELS_{}_FIXED.txt'.format(k)) as file:   #BronxB LABEL1, BronxA LABEL2
         reader = csv.reader(file, delimiter='\t')  #Works with elements as strings
         for row in reader:
             network_id = row[0].strip()
-            spec = row[1]
-            species_from_id[network_id] = spec
+            species = row[1]
+            species_dict[network_id] = species
+
+def species_from_id(network_id):
+    return species_dict[network_id[:10]]
