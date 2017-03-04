@@ -124,7 +124,7 @@ def get_nesting_numbers(G):
     return nesting_number, nesting_number_no_ext
 
 
-def PolyArea(x, y):
+def polygon_area(x, y):
     """
     Calculate the area of an arbitrary polygon.
     """
@@ -137,40 +137,20 @@ def get_total_leaf_area(G):
     This function calculates each invidual basis cycle area, adds all the areas and
     returns the total sum, which corresponds to the leaf area
     """
-    basis_cycles = nx.cycle_basis(G, 1)   #Each list has node indices representing one basis cycle
-    no_basis_cycles = len(basis_cycles)
+    cycle_basis = nx.cycle_basis(G)
     node_positions = nx.get_node_attributes(G,'pos')
+    total_leaf_area = 0
 
-    coordinates = np.empty((no_basis_cycles, 0)).tolist()  #Lists of individual cycles containing node positions (x,y)
-
-    i = 0
-    for cycle in basis_cycles:
+    for cycle in cycle_basis:
+        x = []
+        y = []
         for node in cycle:
-            coordinates[i].append(node_positions[node])  #Append node positions by looking at pos[index] returs tuple (x,y)
-        i+=1
+            pos = node_positions[node]
+            x.append(pos[0])
+            y.append(pos[1])
+        leaf_area = polygon_area(np.array(x), np.array(y))
+        total_leaf_area += leaf_area
 
-
-    X = np.zeros((no_basis_cycles, 0)).tolist()  #Separate coordinates into X-Y arrays
-    Y = np.zeros((no_basis_cycles, 0)).tolist()
-
-    j = 0
-    for item3 in coordinates:
-        #item4 is a tuple: (x,y) --> item[0],item[1]
-        for item4 in item3:
-            X[j].append(item4[0])
-            Y[j].append(item4[1])
-        j+=1
-
-
-    cycle_areas = np.zeros(no_basis_cycles)   #Store polygon areas
-
-
-    k=0
-    for item5 in cycle_areas:
-        cycle_areas[k] = PolyArea(X[k],Y[k])  #Function call: Compute single cycle (polygon) area
-        k+=1
-
-    total_leaf_area = sum(cycle_areas)
     return total_leaf_area
 
 
