@@ -38,7 +38,7 @@ def clean_graph(graph):
     return con[0]
 
 
-def graph_from_data(node_path, edge_path):
+def graph_from_data(node_path, edge_path, clean=False):
     """
     Create networkX graph for given node and edge files.
     """
@@ -80,11 +80,13 @@ def graph_from_data(node_path, edge_path):
             conductivity=1
         )
 
-    #  return network_id, clean_graph(G)
-    return network_id, G
+    if clean:
+        return network_id, clean_graph(G)
+    else:
+        return network_id, G
 
 
-def graph_generator():
+def graph_generator(clean=False):
     """
     Iterate over all graphs.
     """
@@ -105,7 +107,34 @@ def graph_generator():
             # until the next element is accessed again. So everytime we access the next element,
             # we raise i to i+1, get the paths for the corresponding files and generate the graph
             # for these files.
-            yield graph_from_data(node_path, edge_path)
+            yield graph_from_data(node_path, edge_path, clean)
+
+
+def save_feature(feature_function, feature_name, skip_existing=True, clean=False):
+    # If we want to skip feature calculation for networks which already have
+    # a value in the file, we want to append values with mode 'a', otherwise
+    # we want to create a new file with 'w'
+    if skip_existing:
+        write_mode = 'a'
+    else:
+        write_mode = 'w'
+
+    # Get whole file content to check for existing entries
+    with open('features/{}.txt'.format(feature_name), 'r') as file:
+        content = file.read()
+
+    with open('features/{}.txt'.format(feature_name), write_mode) as file:
+        for network_id, G in graph_generator(clean=clean):
+            # If network_id is already in file, skip calculation of the
+            # corresponding value
+            if skip_existing:
+                if network_id in content:
+                    continue
+
+            print('Saving {} for {}...'.format(feature_name, network_id))
+            feature_value = feature_function(G)
+            file.write(network_id + '\t' + str(feature_value) + '\n')
+            file.flush()
 
 
 def get_nesting_numbers(G):
