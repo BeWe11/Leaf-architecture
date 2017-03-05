@@ -60,7 +60,7 @@ def vein_distance(G):
 def areole_area(G):
     total_leaf_area = get_total_leaf_area(G)
     cycle_basis = nx.cycle_basis(G)
-    return total_leaf_area / len(cycle_basis)   #It is mean areole area 
+    return total_leaf_area / len(cycle_basis)   #It is mean areole area
 
 
 def areole_density(G):
@@ -94,10 +94,8 @@ def nesting_numbers(G):
     'clean_graph' has been applied to G.
     """
     tree, _, _ = hierarchical_decomposition(G)
-    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_no_ext_weighted, _ = analyze_tree(tree, weighted=True)
-    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_no_ext_weighted, _ = analyze_tree(tree, weighted=True)
-    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_no_ext_unweighted, _ = analyze_tree(tree, weighted=True)
-    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_no_ext_unweighted, _ = analyze_tree(tree, weighted=True)
+    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, _ = analyze_tree(tree, weighted=True)
+    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext, _ = analyze_tree(tree, weighted=False)
 
     nesting_number_weighted = 1 - tree_asymmetry_weighted
     nesting_number_weighted_no_ext = 1 - tree_asymmetry_weighted_no_ext
