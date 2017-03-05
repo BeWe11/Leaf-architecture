@@ -2,13 +2,18 @@ import networkx as nx
 import csv
 import os
 
+from scripts.decomposer import sorted_connected_components, \
+                               remove_intersecting_edges, \
+                               prune_graph, \
+                               apply_workaround
+
 
 def clean_graph(graph):
-    print("Removing disconnected parts")
-    con = sorted_connected_components(graph)
-    assert len(con) != 0, 'Graph is empty!'
+    #  print("Removing disconnected parts")
+    #  con = sorted_connected_components(graph)
+    #  assert len(con) != 0, 'Graph is empty!'
 
-    graph = con[0]
+    #  graph = con[0]
 
     print("Removing intersecting edges.")
     remove_intersecting_edges(graph)
@@ -70,6 +75,12 @@ def graph_from_data(node_path, edge_path, clean=False):
             length=edge['length'],
             conductivity=1
         )
+
+    print("Removing disconnected parts")
+    con = sorted_connected_components(G)
+    assert len(con) != 0, 'Graph is empty!'
+
+    G = con[0]
 
     if clean:
         return network_id, clean_graph(G)

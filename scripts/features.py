@@ -1,11 +1,7 @@
 import numpy as np
 import networkx as nx
 
-from scripts.decomposer import sorted_connected_components, \
-                       remove_intersecting_edges, \
-                       prune_graph, \
-                       apply_workaround, \
-                       hierarchical_decomposition
+from scripts.decomposer import hierarchical_decomposition
 
 from scripts.analyzer import analyze_tree
 
