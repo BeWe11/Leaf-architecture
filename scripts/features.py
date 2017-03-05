@@ -60,7 +60,7 @@ def vein_distance(G):
 def areole_area(G):
     total_leaf_area = get_total_leaf_area(G)
     cycle_basis = nx.cycle_basis(G)
-    return total_leaf_area / len(cycle_basis)
+    return total_leaf_area / len(cycle_basis)   #It is mean areole area 
 
 
 def areole_density(G):
