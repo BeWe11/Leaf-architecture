@@ -144,7 +144,14 @@ def save_feature(feature_function, skip_existing=True, clean=False):
 
             print('Saving {} for {}...'.format(feature_name, network_id))
             feature_value = feature_function(G)
-            file.write(network_id + '\t' + str(feature_value) + '\n')
+            file.write(network_id)
+            try:
+                for value in feature_value:
+                    file.write('\t' + str(value))
+                file.write('\n')
+            except:
+                file.write('\t' + str(feature_value) + '\n')
+
             file.flush()
 
 
