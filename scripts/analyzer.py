@@ -48,14 +48,14 @@ def edge_prune_graph(G):
 
                 l = l1 + l2
                 c = (l1*c1 + l2*c2)/l
-                
+
                 # add new edge, remove old one
                 G.add_edge(n1, n2, weight=l, conductivity=c)
                 G.remove_node(n)
 
                 n_removed += 1
         return n_removed
-    
+
     print("Edge pruning...")
     while pruning_step(G) > 0:
         pass
@@ -76,9 +76,9 @@ def weighted_line_graph(G, average=False):
     if average:
         new_node_conds = {}
         for n, d in line_graph.nodes_iter(data=True):
-            neighbor_conds = mean([line_graph.node[m]['conductivity'] 
+            neighbor_conds = mean([line_graph.node[m]['conductivity']
                     for m in line_graph.neighbors(n)])
-            new_node_conds[n] = 0.5*(d['conductivity'] + 
+            new_node_conds[n] = 0.5*(d['conductivity'] +
                     neighbor_conds)
 
         for n, v in new_node_conds.items():
@@ -97,7 +97,7 @@ def topological_length(line_graph, e, G, mode='lt'):
     current_width = line_graph.node[e]['conductivity']
     current_node = e
     edges =  [e]
-    
+
     if mode == 'lt':
         comp = lambda x, y: x < y
     elif mode == 'leq':
@@ -109,25 +109,25 @@ def topological_length(line_graph, e, G, mode='lt'):
                for n in line_graph.neighbors(current_node)
                if comp(line_graph.node[n]['conductivity'], current_width)
                and not n in edges]
-        
+
         # edges in 2-neighborhood
         #neighs_below_2 = [(line_graph.node[n]['conductivity'], n)
-        #       for n in decomposer.knbrs(line_graph, current_node, 2) 
+        #       for n in decomposer.knbrs(line_graph, current_node, 2)
         #       if line_graph.node[n]['conductivity'] < current_width]
-                    
+
         length += 1
         length_real += G[current_node[0]][current_node[1]]['weight']
-        
+
         # we're at the end
         if len(neighs_below) == 0:
             break
 
-        # use best bet from both 2 and 1 neighborhood            
+        # use best bet from both 2 and 1 neighborhood
         max_neighs = max(neighs_below)
 
         current_width, current_node = max_neighs
         edges.append(current_node)
-    
+
     # plot edges
     #print edges
     #plt.sca(self.leaf_subplot)
@@ -199,7 +199,7 @@ def mark_subtrees(tree):
 
             r_wts = s0['asymmetry-simple-weights']
             s_wts = s1['asymmetry-simple-weights']
-            
+
             abs_degree_diff = abs(float(r) - s)
             degree = r + s
 
@@ -210,10 +210,10 @@ def mark_subtrees(tree):
                 my_part_2 = abs_degree_diff/(degree - 2)
             else:
                 my_part_2 = None
-            
+
             asym_simple_wts = r_wts + s_wts + [degree - 1]
             sub_part_asym = r_parts + s_parts + [my_part]
-            
+
             tree.node[n]['subtree-degree'] = degree
             tree.node[n]['partition-asymmetry'] = my_part
             tree.node[n]['partition-asymmetry-1'] = my_part_1
@@ -224,7 +224,7 @@ def mark_subtrees(tree):
             tree.node[n]['asymmetry-simple'] = ma.average(
                     sub_part_asym, weights=asym_simple_wts)
             tree.node[n]['asymmetry-unweighted'] = ma.average(sub_part_asym)
-             
+
             tree.node[n]['level'] = max(s0['level'], s1['level']) + 1
 
 def remove_external_nodes(tree):
@@ -232,16 +232,16 @@ def remove_external_nodes(tree):
     but all external nodes are removed.
     """
     no_ext_tree = tree.copy()
-    
+
     # Remove external nodes except for root which must be kept
     root = no_ext_tree.graph['root']
     no_ext_tree.remove_nodes_from(n for n in tree.nodes_iter()
             if tree.node[n]['external'] and n != root)
-    
-    internal_nodes = [n for n in no_ext_tree.nodes() if 
+
+    internal_nodes = [n for n in no_ext_tree.nodes() if
             len(no_ext_tree.successors(n)) == 1 \
             and len(no_ext_tree.predecessors(n)) == 1]
-    
+
     for i in internal_nodes:
         pr = no_ext_tree.predecessors(i)[0]
         su = no_ext_tree.successors(i)[0]
@@ -266,26 +266,26 @@ def average_asymmetry(marked_tree, delta, Delta, attr='asymmetry-simple'):
     """ Returns the average asymmetry of all subtrees of tree whose
         degree is within Delta/2 from delta
     """
-    asymmetries = array([marked_tree.node[n][attr] 
+    asymmetries = array([marked_tree.node[n][attr]
             for n in marked_tree.nodes_iter()
             if abs(marked_tree.node[n]['subtree-degree'] - delta) <=
             Delta/2.])
-    
+
     if len(asymmetries) > 0:
         return mean(asymmetries)
     else:
         return float('NaN')
 
 @plot.save_plot(name="average_asymmetry")
-def avg_asymmetries_plot(marked_tree, Delta, 
+def avg_asymmetries_plot(marked_tree, Delta,
         attr='asymmetry-simple', mode="default"):
     """ Makes a plot of several average asymmetries in a certain range
     with fixed delta
     """
     degree = marked_tree.node[marked_tree.graph['root']]['subtree-degree']
-    degrees = array(sorted(list(set([marked_tree.node[n]['subtree-degree'] 
+    degrees = array(sorted(list(set([marked_tree.node[n]['subtree-degree']
         for n in marked_tree.nodes_iter()]))))
-    asyms = [average_asymmetry(marked_tree, d, Delta, attr=attr) 
+    asyms = [average_asymmetry(marked_tree, d, Delta, attr=attr)
             for d in degrees]
 
     plt.figure()
@@ -332,24 +332,24 @@ def normalized_area_distribution(tree, bins):
 
     normed = hist/bins
     cumul = 1. - cumsum(normed)
-    
+
     return areas, normed, cumul
 
-def low_level_avg_asymmetries(tree, degree, Delta, 
+def low_level_avg_asymmetries(tree, degree, Delta,
         attr='asymmetry-simple'):
     """ Cuts the tree at given degree level and calculates the
     average asymmetries for the resulting subtrees.
     """
     tree_new = tree.copy()
 
-    nodes_to_rem = [n for n in tree.nodes_iter() 
+    nodes_to_rem = [n for n in tree.nodes_iter()
             if tree.node[n]['subtree-degree'] >= degree]
     tree_new.remove_nodes_from(nodes_to_rem)
-    
-    roots = [n for n in tree_new.nodes_iter() 
+
+    roots = [n for n in tree_new.nodes_iter()
             if len(tree_new.predecessors(n)) == 0 and
             len(tree_new.successors(n)) == 2]
-    
+
     return subtree_asymmetries(tree_new, roots, Delta, attr=attr)
 
 def subtree_asymmetries(tree, roots, Delta, attr='asymmetry-simple'):
@@ -358,18 +358,18 @@ def subtree_asymmetries(tree, roots, Delta, attr='asymmetry-simple'):
     """
     subtrees = [nx.DiGraph(tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
             for r in roots]
-    
+
     reslt = []
     for s, r in zip(subtrees, roots):
         s.graph['root'] = r
-        
+
         degree = s.node[r]['subtree-degree']
         degrees = array(sorted(list(set([
-            s.node[n]['subtree-degree'] 
+            s.node[n]['subtree-degree']
             for n in s.nodes_iter()]))))
 
-        reslt.append([degrees, 
-            [average_asymmetry(s, d, Delta, attr=attr) 
+        reslt.append([degrees,
+            [average_asymmetry(s, d, Delta, attr=attr)
                 for d in degrees]])
 
     return reslt
@@ -384,7 +384,7 @@ def get_subtrees(tree, roots, mode='all', area=0, degree=0):
 
         roots: The root node ids of the subtrees we are interested in
 
-        mode: 
+        mode:
             'all': extract full subtree
             'area': extract subtree whose loop area is closest to area
             'degree': extract subtree whose degree is closest to degree
@@ -406,7 +406,7 @@ def get_subtrees(tree, roots, mode='all', area=0, degree=0):
         roots = []
         for st in subtrees:
             # Find node with area closest to area
-            ar, root = min([(abs(data['cycle_area'] - area), r) 
+            ar, root = min([(abs(data['cycle_area'] - area), r)
                 for r, data in st.nodes_iter(data=True)])
             ar = st.node[root]['cycle_area']
 
@@ -414,7 +414,7 @@ def get_subtrees(tree, roots, mode='all', area=0, degree=0):
 
             print("Subtree closest to {} has area {}, degree {}, root {}".format(area,
                     ar, st.node[root]['subtree-degree'], root))
-        
+
         # Recalculate subtrees
         subtrees = [nx.DiGraph(
             tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
@@ -424,7 +424,7 @@ def get_subtrees(tree, roots, mode='all', area=0, degree=0):
         roots = []
         for st in subtrees:
             # Find node with degree closest to degree
-            de, root = min([(abs(data['subtree-degree'] - degree), r) 
+            de, root = min([(abs(data['subtree-degree'] - degree), r)
                 for r, data in st.nodes_iter(data=True)])
             de = st.node[root]['subtree-degree']
 
@@ -432,7 +432,7 @@ def get_subtrees(tree, roots, mode='all', area=0, degree=0):
 
             print("Subtree closest to {} has degree {}, area {}, root {}".format(
                     degree, de, st.node[root]['cycle_area'], root))
-        
+
         # Recalculate subtrees
         subtrees = [nx.DiGraph(
             tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
@@ -466,22 +466,22 @@ def subtree_asymmetries_areas(tree, roots, attr='asymmetry-simple',
                 area=area)
     else:
         subtrees, roots = get_subtrees(tree, roots)
-    
+
     reslt = []
     for s, r in zip(subtrees, roots):
-        dist = [(s.node[n][attr], s.node[n]['subtree-degree'], 
+        dist = [(s.node[n][attr], s.node[n]['subtree-degree'],
             s.node[n]['cycle_area']) for n in s.nodes_iter()]
 
         dist = [(q, d, a) for q, d, a in dist if a > 0 and d > 0]
 
         reslt.append(dist)
-    
+
     return reslt, subtrees
 
 @plot.save_plot(name="low_level_avg_asymmetries")
 def plot_low_level_avg_asymmetries(tree, frac, Delta,
         attr='asymmetry-simple', mode='default'):
-    
+
     degree = frac*tree.node[tree.graph['root']]['subtree-degree']
     reslts = low_level_avg_asymmetries(tree, degree, Delta, attr=attr)
 
@@ -500,7 +500,7 @@ def load_graph(fname):
     sav = storage.load(fname)
 
     ver = sav['version']
-    
+
     SAVE_FORMAT_VERSION = 5
     if ver > SAVE_FORMAT_VERSION:
         print("File format version {} incompatible!".format(ver))
@@ -528,11 +528,11 @@ def thresholded_asymmetry(tree, thr):
 
     return filtered.mean(), average(filtered, weights=degs[degs <= thr]), asyms
 
-def analyze_tree(tree):
+def analyze_tree(tree, weighted=True):
     # calculate metrics
     horton_strahler = 0
     shreve = 0
-    
+
     print("Constructing marked trees.")
     marked_tree = tree.copy()
     mark_subtrees(marked_tree)
@@ -540,17 +540,21 @@ def analyze_tree(tree):
     tree_no_ext = remove_external_nodes(tree)
     marked_tree_no_ext = tree_no_ext.copy()
     mark_subtrees(marked_tree_no_ext)
-    
+
     print("Calculating tree asymmetry.")
+    if weighted:
+        asymmetry = 'asymmetry-simple'
+    else:
+        asymmetry = 'asymmetry-unweighted'
     tree_asymmetry = marked_tree.node[
-            marked_tree.graph['root']]['asymmetry-unweighted']
+            marked_tree.graph['root']][asymmetry]
     tree_asymmetry_no_ext = marked_tree_no_ext.node[
-            marked_tree_no_ext.graph['root']]['asymmetry-unweighted']
+            marked_tree_no_ext.graph['root']][asymmetry]
 
     #areas, area_hist, cumul = normalized_area_distribution(tree, 100)
-    areas = array([tree_no_ext.node[n]['cycle_area'] 
+    areas = array([tree_no_ext.node[n]['cycle_area']
         for n in tree_no_ext.nodes_iter()])
-    
+
     return horton_strahler, shreve, marked_tree, tree_no_ext, \
             marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
             areas
@@ -577,17 +581,17 @@ if __name__ == '__main__':
     saveload_group = parser.add_mutually_exclusive_group()
     saveload_group.add_argument('-l', '--load', help="Load saved analyzed"
             " data instead of graph file", action='store_true')
-    saveload_group.add_argument('-s', '--save', 
+    saveload_group.add_argument('-s', '--save',
             help="Save analyzed data in pickle",
             type=str, default="")
-    saveload_group.add_argument('-r', '--reanalyze', 
+    saveload_group.add_argument('-r', '--reanalyze',
             help="Reanalyzes the given"
             " file, i.e. does everything except calculating"
             " the tree layout.", action='store_true')
 
     args = parser.parse_args()
     print("Loading file.")
-    
+
     if args.load or args.reanalyze:
         sav = storage.load(args.INPUT)
 
@@ -611,11 +615,11 @@ if __name__ == '__main__':
         if n_remv > 0:
             print("Attention, workaround detected and")
             " removed {} collinear edges.".format(n_remv)
-        
+
         horton_strahler, shreve, marked_tree, tree_no_ext, \
             marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
             areas = analyze_tree(tree)
-        
+
         if args.nice_tree_positions:
             print("Calculating nice tree layout positions.")
             tree_pos = nx.graphviz_layout(tree, prog='dot')
@@ -655,16 +659,16 @@ if __name__ == '__main__':
                 'marked-tree-no-ext': marked_tree_no_ext,
                 'tree-positions': tree_pos,
                 }
-        
+
         print("Saving analysis data.")
         storage.save(sav, args.save)
-        
+
         datadir = args.save + '_data'
         if not os.path.exists(datadir):
             os.makedirs(datadir)
         savetxt(args.save + '_data/degrees_asymmetries.txt', asyms_all)
         print("Done.")
-    
+
     if args.plot or args.save_plots != "":
         print("Plotting/saving plots.")
         fname = ""
@@ -682,41 +686,41 @@ if __name__ == '__main__':
         plt.figure()
         print("Drawing hierarchical trees.")
         plot.draw_tree(marked_tree, pos=tree_pos, fname=fname, fext=fext)
-        
+
         plt.figure()
-        
+
         if args.tree_heights:
             pos = tree_pos_h
         else:
             pos = tree_pos
 
-        plot.draw_tree(marked_tree_no_ext, pos=pos, 
+        plot.draw_tree(marked_tree_no_ext, pos=pos,
                 fname=fname_no_ext, fext=fext)
 
         plt.figure()
         print("Drawing filtration.")
         plot.draw_filtration(filt, fname=fname, fext=fext, dpi=600)
-        
+
         print("Calculating average asymmetries.")
         Delta = args.Delta*marked_tree.node[marked_tree.graph['root']
                 ]['subtree-degree']
         Delta_no_ext = args.Delta*marked_tree_no_ext.node[
                 marked_tree_no_ext.graph['root']]['subtree-degree']
 
-        avg_asymmetries_plot(marked_tree, Delta, fname=fname + 
+        avg_asymmetries_plot(marked_tree, Delta, fname=fname +
                 "_asym_{}".format(args.Delta), fext=fext)
-        avg_asymmetries_plot(marked_tree_no_ext, Delta_no_ext, 
-                mode="no-external", fname=fname_no_ext + 
+        avg_asymmetries_plot(marked_tree_no_ext, Delta_no_ext,
+                mode="no-external", fname=fname_no_ext +
                 "_asym_{}".format(args.Delta), fext=fext)
-        plot_low_level_avg_asymmetries(marked_tree, 
-                0.75, Delta, fname=fname + "_asym_{}".format(args.Delta), 
+        plot_low_level_avg_asymmetries(marked_tree,
+                0.75, Delta, fname=fname + "_asym_{}".format(args.Delta),
                 fext=fext)
 
         print("Cumulative size distribution.")
         cum_size_plot(areas, fname=fname, fext=fext)
 
         print("Done.")
-    
+
     if args.plot:
         plt.show()
         input()

@@ -94,11 +94,14 @@ def nesting_numbers(G):
     'clean_graph' has been applied to G.
     """
     tree, _, _ = hierarchical_decomposition(G)
-    horton_strahler, shreve, marked_tree, tree_no_ext, \
-    marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
-    areas = analyze_tree(tree)
+    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_no_ext_weighted, _ = analyze_tree(tree, weighted=True)
+    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_no_ext_weighted, _ = analyze_tree(tree, weighted=True)
+    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_no_ext_unweighted, _ = analyze_tree(tree, weighted=True)
+    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_no_ext_unweighted, _ = analyze_tree(tree, weighted=True)
 
-    nesting_number = 1 - tree_asymmetry
-    nesting_number_no_ext = 1 - tree_asymmetry_no_ext
+    nesting_number_weighted = 1 - tree_asymmetry_weighted
+    nesting_number_weighted_no_ext = 1 - tree_asymmetry_weighted_no_ext
+    nesting_number_unweighted = 1 - tree_asymmetry_unweighted
+    nesting_number_unweighted_no_ext = 1 - tree_asymmetry_unweighted_no_ext
 
-    return nesting_number, nesting_number_no_ext
+    return nesting_number_weighted, nesting_number_no_ext_weighted, nesting_number_weighted_no_ext, nesting_number_weighted_no_ext
