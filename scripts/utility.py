@@ -1,15 +1,6 @@
 import networkx as nx
-import numpy as np
 import csv
 import os
-
-from scripts.decomposer import sorted_connected_components, \
-                       remove_intersecting_edges, \
-                       prune_graph, \
-                       apply_workaround, \
-                       hierarchical_decomposition
-
-from scripts.analyzer import analyze_tree
 
 
 def clean_graph(graph):
@@ -32,7 +23,7 @@ def clean_graph(graph):
     pruned = prune_graph(pruned)
 
     con = sorted_connected_components(pruned)
-    print("Connected components:", len(con))
+    print("Connected components:", len(con), '\n')
     assert len(con) != 0, 'Graph is empty!'
 
     return con[0]
@@ -110,7 +101,13 @@ def graph_generator(clean=False):
             yield graph_from_data(node_path, edge_path, clean)
 
 
-def save_feature(feature_function, feature_name, skip_existing=True, clean=False):
+def save_feature(feature_function, skip_existing=True, clean=False):
+    feature_name = feature_function.__name__
+    if clean:
+        file_path = 'features/{}_clean.txt'.format(feature_name)
+    else:
+        file_path = 'features/{}.txt'.format(feature_name)
+
     # If we want to skip feature calculation for networks which already have
     # a value in the file, we want to append values with mode 'a', otherwise
     # we want to create a new file with 'w'
@@ -119,11 +116,14 @@ def save_feature(feature_function, feature_name, skip_existing=True, clean=False
     else:
         write_mode = 'w'
 
-    # Get whole file content to check for existing entries
-    with open('features/{}.txt'.format(feature_name), 'r') as file:
-        content = file.read()
+    if os.path.isfile(file_path):
+        # Get whole file content to check for existing entries
+        with open(file_path, 'r') as file:
+            content = file.read()
+    else:
+        content = ''
 
-    with open('features/{}.txt'.format(feature_name), write_mode) as file:
+    with open(file_path, write_mode) as file:
         for network_id, G in graph_generator(clean=clean):
             # If network_id is already in file, skip calculation of the
             # corresponding value
@@ -135,86 +135,6 @@ def save_feature(feature_function, feature_name, skip_existing=True, clean=False
             feature_value = feature_function(G)
             file.write(network_id + '\t' + str(feature_value) + '\n')
             file.flush()
-
-
-def get_nesting_numbers(G):
-    """
-    Calculate nesting number for a *cleaned graph*, which means that
-    'clean_graph' has been applied to G.
-    """
-    tree, _, _ = hierarchical_decomposition(G)
-    horton_strahler, shreve, marked_tree, tree_no_ext, \
-    marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
-    areas = analyze_tree(tree)
-
-    nesting_number = 1 - tree_asymmetry
-    nesting_number_no_ext = 1 - tree_asymmetry_no_ext
-
-    return nesting_number, nesting_number_no_ext
-
-
-def polygon_area(x, y):
-    """
-    Calculate the area of an arbitrary polygon.
-    """
-    return 0.5 * (np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))))
-
-
-#Function recieves the nx.Graph generated
-def get_total_leaf_area(G):
-    """
-    This function calculates each invidual basis cycle area, adds all the areas and
-    returns the total sum, which corresponds to the leaf area
-    """
-    cycle_basis = nx.cycle_basis(G)
-    node_positions = nx.get_node_attributes(G,'pos')
-    total_leaf_area = 0
-
-    for cycle in cycle_basis:
-        x = []
-        y = []
-        for node in cycle:
-            pos = node_positions[node]
-            x.append(pos[0])
-            y.append(pos[1])
-        leaf_area = polygon_area(np.array(x), np.array(y))
-        total_leaf_area += leaf_area
-
-    return total_leaf_area
-
-
-def get_total_vein_length(G):
-    sum_vein = 0
-    for edge in G.edges():
-        sum_vein += G.get_edge_data(*edge)['length']   #With * python unpacks the tuple
-    return sum_vein
-
-
-def get_vein_density(G):
-    total_vein_length = get_total_vein_length(G)
-    total_leaf_area = get_total_leaf_area(G)
-    return total_vein_length / total_leaf_area
-
-def get_areole_density(G):
-    """
-    Individual basic cycles forming G are obtained using nx.cycle_basis
-    """
-    basis_cycles = nx.cycle_basis(G, 1)   #Each list has node indices representing one basis cycle
-    no_basis_cycles = len(basis_cycles)
-    total_leaf_area = get_total_leaf_area(G)
-    return no_basis_cycles/total_leaf_area
-
-def get_weighted_vein_thickness(G):
-    """
-    Weighted vein thickness is calculated as the total sum of the product radius(weight)*length of each
-    individual vein segment divided by total vein length
-    """
-    total_vein_length = get_total_vein_length(G)
-    individual_weighted_vein_thickness = 0
-    for edge in G.edges():
-        individual_weighted_vein_thickness += G.get_edge_data(*edge)['weight']*G.get_edge_data(*edge)['length']  #vein_thickness*vein_length
-    weighted_vein_thickness = individual_weighted_vein_thickness/total_vein_length
-    return weighted_vein_thickness
 
 
 species_dict = {}
