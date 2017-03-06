@@ -59,7 +59,8 @@ import sys
 from . import storage
 from . import plot
 
-from blist import sortedlist
+#from blist import sortedlist
+from sortedcontainers import SortedList as sortedlist
 
 from .cycle_basis import *
 from .helpers import *
@@ -395,6 +396,7 @@ def hierarchical_decomposition(leaf, avg_fun=None,
     # Maintain a sorted collection of all intersections ordered
     # by conductivity
     sorted_edges = [tuple(sorted(e)) for e in dual.edges()]
+    #import pdb; pdb.set_trace()
     s_edges = sortedlist(sorted_edges, key=lambda k: \
             dual[k[0]][k[1]]['conductivity'])
 
@@ -544,7 +546,9 @@ def hierarchical_decomposition(leaf, avg_fun=None,
             tree.remove_nodes_from(ext)
 
         # Counter to index new nodes
-        print(("Step {}/{}\r".format(k, max_node),))
+        print("Step {}/{}\n".format(k, max_node))
+        #with open('log') as file:
+            #file.write("Step {}/{}\n".format(k, max_node))
         k += 1
 
     if k > 1:
