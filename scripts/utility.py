@@ -34,7 +34,7 @@ def clean_graph(graph):
     return con[0]
 
 
-def graph_from_data(node_path, edge_path, clean=False):
+def graph_from_data(node_path, edge_path):
     """
     Create networkX graph for given node and edge files.
     """
@@ -86,14 +86,10 @@ def graph_from_data(node_path, edge_path, clean=False):
     assert len(con) != 0, 'Graph is empty!'
 
     G = con[0]
-
-    if clean:
-        return network_id, clean_graph(G)
-    else:
-        return network_id, G
+    return network_id, G
 
 
-def graph_generator(clean=False):
+def graph_generator():
     """
     Iterate over all graphs.
     """
@@ -114,7 +110,7 @@ def graph_generator(clean=False):
             # until the next element is accessed again. So everytime we access the next element,
             # we raise i to i+1, get the paths for the corresponding files and generate the graph
             # for these files.
-            yield graph_from_data(node_path, edge_path, clean)
+            yield graph_from_data(node_path, edge_path)
 
 
 def save_feature(feature_function, skip_existing=True, clean=False):
@@ -140,7 +136,7 @@ def save_feature(feature_function, skip_existing=True, clean=False):
         content = ''
 
     with open(file_path, write_mode) as file:
-        for network_id, G in graph_generator(clean=clean):
+        for network_id, G in graph_generator():
             # If network_id is already in file, skip calculation of the
             # corresponding value
             if skip_existing:
@@ -148,6 +144,8 @@ def save_feature(feature_function, skip_existing=True, clean=False):
                     continue
 
             print('Saving {} for {}...'.format(feature_name, network_id))
+            if clean:
+                G = clean_graph(G)
             feature_value = feature_function(G)
             file.write(network_id)
             try:
