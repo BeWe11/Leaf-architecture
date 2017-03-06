@@ -88,6 +88,90 @@ def weighted_vein_thickness(G):
 
 ### TOPOLOGICAL ###
 
+def weighted_line_graph(G, average=False):
+    """ Return a line graph of G where edge attributes are propagated
+    properly. Node attributes are ignored.
+    If average is set to True, perform an averaging over
+    conductivities.
+    """
+    line_graph = nx.line_graph(G)
+    line_graph.add_nodes_from((tuple(sorted((u, v))), d)
+            for u, v, d in G.edges_iter(data=True))
+
+    # average
+    if average:
+        new_node_conds = {}
+        for n, d in line_graph.nodes_iter(data=True):
+            neighbor_conds = mean([line_graph.node[m]['conductivity']
+                    for m in line_graph.neighbors(n)])
+            new_node_conds[n] = 0.5*(d['conductivity'] +
+                    neighbor_conds)
+
+        for n, v in new_node_conds.items():
+            line_graph.node[n]['conductivity'] = v
+
+    return line_graph
+
+def topological_length_alternative(line_graph, e, G, mode='lt'):
+    """ Find the topological length associated to node e
+    in the line graph. Topological length is defined as
+    in the comment to topological_length_statistics.
+    """
+    length = 0
+    length_real = 0
+
+    current_width = line_graph.node[e]['conductivity']
+    current_node = e
+    edges =  [e]
+
+    if mode == 'lt':
+        comp = lambda x, y: x < y
+    elif mode == 'leq':
+        comp = lambda x, y: x <= y
+
+    while True:
+        # find neighboring edges
+        neighs_below = [(line_graph.node[n]['conductivity'], n)
+               for n in line_graph.neighbors(current_node)
+               if comp(line_graph.node[n]['conductivity'], current_width)
+               and not n in edges]
+
+        # edges in 2-neighborhood
+        #neighs_below_2 = [(line_graph.node[n]['conductivity'], n)
+        #       for n in decomposer.knbrs(line_graph, current_node, 2)
+        #       if line_graph.node[n]['conductivity'] < current_width]
+
+        length += 1
+        length_real += G[current_node[0]][current_node[1]]['weight']
+
+        # we're at the end
+        if len(neighs_below) == 0:
+            break
+
+        # use best bet from both 2 and 1 neighborhood
+        max_neighs = max(neighs_below)
+
+        current_width, current_node = max_neighs
+        edges.append(current_node)
+
+    # plot edges
+    #print edges
+    #plt.sca(self.leaf_subplot)
+    #plot.draw_leaf_raw(G, edge_list=edges, color='r')
+    #raw_input()
+
+    return length, length_real, edges
+
+
+def topological_length(G):
+    total_length = 0
+    line_graph = weighted_line_graph(G)
+    for edge in line_graph.nodes():
+        length, _, _ = topological_length_alternative(line_graph, edge, G)
+        total_length += length
+    return total_length / (len(line_graph.nodes()))
+
+
 def nesting_numbers(G):
     """
     Calculate nesting number for a *cleaned graph*, which means that
