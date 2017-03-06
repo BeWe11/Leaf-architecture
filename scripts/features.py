@@ -94,12 +94,13 @@ def nesting_numbers(G):
     'clean_graph' has been applied to G.
     """
     tree, _, _ = hierarchical_decomposition(G)
-    _, _, _, _, _, tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, _ = analyze_tree(tree, weighted=True)
-    _, _, _, _, _, tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext, _ = analyze_tree(tree, weighted=False)
+    tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
+    tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext = analyze_tree(tree)
 
     nesting_number_weighted = 1 - tree_asymmetry_weighted
     nesting_number_weighted_no_ext = 1 - tree_asymmetry_weighted_no_ext
     nesting_number_unweighted = 1 - tree_asymmetry_unweighted
     nesting_number_unweighted_no_ext = 1 - tree_asymmetry_unweighted_no_ext
 
-    return nesting_number_weighted, nesting_number_no_ext_weighted, nesting_number_weighted_no_ext, nesting_number_weighted_no_ext
+    return nesting_number_weighted, nesting_number_weighted_no_ext, \
+           nesting_number_unweighted, nesting_number_unweighted_no_ext

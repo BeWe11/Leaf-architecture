@@ -528,7 +528,7 @@ def thresholded_asymmetry(tree, thr):
 
     return filtered.mean(), average(filtered, weights=degs[degs <= thr]), asyms
 
-def analyze_tree(tree, weighted=True):
+def analyze_tree(tree):
     # calculate metrics
     horton_strahler = 0
     shreve = 0
@@ -542,22 +542,27 @@ def analyze_tree(tree, weighted=True):
     mark_subtrees(marked_tree_no_ext)
 
     print("Calculating tree asymmetry.")
-    if weighted:
-        asymmetry = 'asymmetry-simple'
-    else:
-        asymmetry = 'asymmetry-unweighted'
-    tree_asymmetry = marked_tree.node[
-            marked_tree.graph['root']][asymmetry]
-    tree_asymmetry_no_ext = marked_tree_no_ext.node[
-            marked_tree_no_ext.graph['root']][asymmetry]
+    tree_asymmetry_weighted = marked_tree.node[
+            marked_tree.graph['root']]['asymmetry-simple']
+    tree_asymmetry_weighted_no_ext = marked_tree_no_ext.node[
+            marked_tree_no_ext.graph['root']]['asymmetry-simple']
+    tree_asymmetry_unweighted = marked_tree.node[
+            marked_tree.graph['root']]['asymmetry-unweighted']
+    tree_asymmetry_unweighted_no_ext = marked_tree_no_ext.node[
+            marked_tree_no_ext.graph['root']]['asymmetry-unweighted']
 
     #areas, area_hist, cumul = normalized_area_distribution(tree, 100)
     areas = array([tree_no_ext.node[n]['cycle_area']
         for n in tree_no_ext.nodes_iter()])
 
-    return horton_strahler, shreve, marked_tree, tree_no_ext, \
-            marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
-            areas
+    #  return horton_strahler, shreve, marked_tree, tree_no_ext, \
+    #          marked_tree_no_ext, tree_asymmetry, tree_asymmetry_no_ext, \
+    #          areas
+
+    return tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
+           tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext, \
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Leaf Decomposition Analyzer.")

@@ -153,6 +153,7 @@ def save_feature(feature_function, skip_existing=True, clean=False):
                 file.write('\t' + str(feature_value) + '\n')
 
             file.flush()
+            print('Saved {} for {}!\n'.format(feature_name, network_id))
 
 
 species_dict = {}
