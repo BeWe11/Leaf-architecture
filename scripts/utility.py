@@ -71,9 +71,14 @@ def graph_from_data(node_path, edge_path, clean=False):
         G.add_edge(
             edge['node_id1'],
             edge['node_id2'],
-            weight=edge['radius'],
+
+            # Naming convention of the NET library
+            conductivity=edge['radius'],
+            weight=edge['length'],
+
+            # Our naming convention
+            radius=edge['radius'],
             length=edge['length'],
-            conductivity=1
         )
 
     print("Removing disconnected parts")

@@ -81,7 +81,7 @@ def weighted_vein_thickness(G):
     total_vein_length = get_total_vein_length(G)
     individual_weighted_vein_thickness = 0
     for edge in G.edges():
-        individual_weighted_vein_thickness += G.get_edge_data(*edge)['weight']*G.get_edge_data(*edge)['length']  #vein_thickness*vein_length
+        individual_weighted_vein_thickness += G.get_edge_data(*edge)['radius']*G.get_edge_data(*edge)['length']  #vein_thickness*vein_length
     weighted_vein_thickness = individual_weighted_vein_thickness / total_vein_length
     return weighted_vein_thickness
 
