@@ -89,7 +89,7 @@ def graph_from_data(node_path, edge_path):
     return network_id, G
 
 
-def graph_generator():
+def graph_generator(skip_file=''):
     """
     Iterate over all graphs.
     """
@@ -104,6 +104,20 @@ def graph_generator():
         for i in range(len(file_list)//2):
             edge_path = os.path.join('data/networks-{}'.format(subset), file_list[2*i])
             node_path = os.path.join('data/networks-{}'.format(subset), file_list[2*i + 1])
+
+            # If a skip_file is given, check whether the id of the current network
+            # is in there, if it is skip the current network
+            if skip_file:
+                if os.path.isfile(skip_file):
+                    network_id = os.path.basename(node_path)
+                    network_id = network_id.split('binary', 1)[0]
+                    network_id = network_id.split('graph', 1)[0]
+                    network_id = network_id[:-1]
+                    # Get whole file content to check for existing entries
+                    with open(skip_file, 'r') as file:
+                        content = file.read()
+                    if network_id in content:
+                        continue
 
             # Everytime the next element of the generator is accessed, the current step in
             # the loop is executed. After the 'yield' line is finished, the generator will pause
@@ -120,6 +134,11 @@ def save_feature(feature_function, skip_existing=True, clean=False):
     else:
         file_path = 'features/{}.txt'.format(feature_name)
 
+    if skip_existing:
+        skip_file = file_path
+    else:
+        skip_file = ''
+
     # If we want to skip feature calculation for networks which already have
     # a value in the file, we want to append values with mode 'a', otherwise
     # we want to create a new file with 'w'
@@ -128,21 +147,8 @@ def save_feature(feature_function, skip_existing=True, clean=False):
     else:
         write_mode = 'w'
 
-    if os.path.isfile(file_path):
-        # Get whole file content to check for existing entries
-        with open(file_path, 'r') as file:
-            content = file.read()
-    else:
-        content = ''
-
     with open(file_path, write_mode) as file:
-        for network_id, G in graph_generator():
-            # If network_id is already in file, skip calculation of the
-            # corresponding value
-            if skip_existing:
-                if network_id in content:
-                    continue
-
+        for network_id, G in graph_generator(skip_file):
             print('Saving {} for {}...'.format(feature_name, network_id))
             if clean:
                 G = clean_graph(G)
