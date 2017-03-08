@@ -195,9 +195,10 @@ def read_feature(feature_name):
         reader = csv.reader(file, delimiter='\t')
         for row in reader:
             network_id = row[0]
-            if feature_name == 'nesting_number':
+            if feature_name == 'nesting_numbers':
                 value = [float(x) for x in row[1:]]
-            value = float(row[1])
+            else:
+                value = float(row[1])
             values[network_id] = value
     return values
 
