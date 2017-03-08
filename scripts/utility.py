@@ -189,17 +189,41 @@ def species_from_id(network_id):
     return species_dict[network_id[:10]]
 
 
-def read_feature(feature_name):
-    values = {}
-    with open('features/{}.txt'.format(feature_name)) as file:
-        reader = csv.reader(file, delimiter='\t')
-        for row in reader:
-            network_id = row[0]
-            if feature_name == 'nesting_numbers':
-                value = [float(x) for x in row[1:]]
-            else:
-                value = float(row[1])
-            values[network_id] = value
-    return values
+def read_features():
+    feature_names = [
+        'areole_area',
+        'areole_density',
+        'average_node_degree',
+        'n_edges',
+        'n_nodes',
+        'nesting_numbers',
+        'topological_length',
+        'vein_density',
+        'weighted_vein_thickness',
+    ]
+    data = {}
+    for feature_name in feature_names:
+        if feature_name == 'nesting_numbers':
+            values_list = [{}, {}, {}, {}]
+            with open('features/{}.txt'.format(feature_name)) as file:
+                reader = csv.reader(file, delimiter='\t')
+                for row in reader:
+                    network_id = row[0]
+                    for k, value in enumerate([float(x) for x in row[1:]]):
+                        values_list[k][network_id] = value
+            data['nesting_number_weighted'] = values_list[0]
+            data['nesting_number_weighted_no_ext'] = values_list[1]
+            data['nesting_number_unweighted'] = values_list[2]
+            data['nesting_number_unweighted_no_ext'] = values_list[3]
+        else:
+            values = {}
+            with open('features/{}.txt'.format(feature_name)) as file:
+                reader = csv.reader(file, delimiter='\t')
+                for row in reader:
+                    network_id = row[0]
+                    value = float(row[1])
+                    values[network_id] = value
+            data[feature_name] = values
+    return data, feature_names
 
 
