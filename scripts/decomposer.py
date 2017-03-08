@@ -25,6 +25,7 @@
 from numpy import *
 from numpy import ma
 import numpy.random
+#import numpy as np
 
 import scipy
 import scipy.sparse
@@ -567,6 +568,7 @@ def apply_workaround(G):
     """ Applies a workaround to the graph which removes all
     exactly collinear edges.
     """
+    #np.seterr(divide='ignore', invalid='ignore')
 
     removed_edges = []
     for n in G.nodes():
@@ -576,6 +578,7 @@ def apply_workaround(G):
         p0 = array([G.node[n]['pos'][0], G.node[n]['pos'][1]])
 
         dp = p1 - p0
+        #with np.errstate(invalid='ignore'):
         dp_l = sqrt((dp*dp).sum(axis=1))
         dp_n = dp/dp_l[...,newaxis]
 
