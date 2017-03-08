@@ -150,7 +150,7 @@ def save_feature(feature_function, skip_existing=True, clean=False):
     with open(file_path, write_mode) as file, open('log_{}'.format(feature_name), 'w') as log_file:
         for network_id, G in graph_generator(skip_file):
             print('Saving {} for {}...'.format(feature_name, network_id))
-            log_file.write('Saving {} for {}...'.format(feature_name, network_id))
+            log_file.write('Saving {} for {}...\n'.format(feature_name, network_id))
 
             # If anytime during feature calculation there is an error, we catch
             # it, write it to a log file and proceed with the next network
@@ -160,7 +160,7 @@ def save_feature(feature_function, skip_existing=True, clean=False):
                 feature_value = feature_function(G)
             except Exception as e:
                 print('Exception occured: {}'.format(e))
-                log_file.write('Exception occured: {}'.format(e))
+                log_file.write('Exception occured: {}\n'.format(e))
             else:
                 file.write(network_id)
                 try:
@@ -170,8 +170,10 @@ def save_feature(feature_function, skip_existing=True, clean=False):
                 except:
                     file.write('\t' + str(feature_value) + '\n')
 
-                file.flush()
                 print('Saved {} for {}!\n'.format(feature_name, network_id))
+                log_file.write('Saved {} for {}!\n\n'.format(feature_name, network_id))
+                file.flush()
+                log_file.flush()
 
 
 species_dict = {}

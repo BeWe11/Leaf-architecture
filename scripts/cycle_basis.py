@@ -5,8 +5,9 @@
 
     functions for calculating the cycle basis of a graph
 """
-
+import numpy
 from numpy import *
+#import numpy as np
 import networkx as nx
 import matplotlib
 import matplotlib.pyplot as plt
@@ -69,6 +70,7 @@ class Cycle():
 
         self.path = list(zip(*edges))[0]
         if coords == None:
+        #if coords is None:
             self.coords = array([[graph.node[n]['pos'][0], graph.node[n]['pos'][1]]
                     for n in self.path])
         else:
@@ -229,6 +231,8 @@ def traverse_graph(G, start, nextn):
     prev = start
     cur = nextn
 
+    numpy.seterr(invalid='raise')
+
     while cur != start:
         cur_coords = array([G.node[cur]['pos'][0], G.node[cur]['pos'][1]])
         # We ignore all neighbors we alreay visited to avoid multiple loops
@@ -251,8 +255,9 @@ def traverse_graph(G, start, nextn):
             vs = neigh_coords - cur_coords
 
             # calculate cos and sin between direction vector and neighbors
+            #with np.errstate(invalid='ignore'):
             u /= sqrt((u*u).sum(-1))
-            vs /= sqrt((vs*vs).sum(-1))[...,newaxis]
+            vs /= sqrt((vs*vs).sum(-1))[...,newaxis]     ###vs is storing nan elements
 
             coss = dot(u, vs.T)
             sins = cross(u, vs)
@@ -326,7 +331,7 @@ def shortest_cycles(G):
     t0 = time.time()
 
     mst = nx.minimum_spanning_tree(G, weight=None)
-
+    print('test', len(G.edges()))
     for u, v in G.edges():
         if not mst.has_edge(u, v):
             # traverse cycle in both directions
@@ -335,7 +340,7 @@ def shortest_cycles(G):
 
             path, edges, coords = traverse_graph(G, v, u)
             cycleset.add(Cycle(G, edges, coords=coords))
-
+    print('test')
     if len(cycleset) != n_cycles:
         print("WARNING: Found only", len(cycleset), "cycles!!")
 
@@ -364,5 +369,3 @@ def find_neighbor_cycles(G, cycles):
         neighbor_cycles.add(tuple(sorted(n)))
 
     return neighbor_cycles
-
-
