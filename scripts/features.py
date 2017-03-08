@@ -1,5 +1,9 @@
 import numpy as np
 import networkx as nx
+import cvxopt as cvx
+from cvxopt.modeling import variable, op
+from scipy.spatial import ConvexHull
+from matplotlib import pyplot as plt
 
 from scripts.decomposer import hierarchical_decomposition
 
@@ -188,3 +192,55 @@ def nesting_numbers(G):
 
     return nesting_number_weighted, nesting_number_weighted_no_ext, \
            nesting_number_unweighted, nesting_number_unweighted_no_ext
+
+
+
+def vein_distance(G):
+    """ approximate vein distances by finding the chebyshev
+    centers of the areoles, and taking the radii.
+"""
+    distances = []
+    cycle_basis = nx.cycle_basis(G)
+    positions = nx.get_node_attributes(G, 'pos')
+    for cycle in cycle_basis:
+        coords = np.array([positions[node] for node in cycle])
+        cvx.solvers.options['show_progress'] = False
+
+        # find convex hull to make approximation
+        # possible
+        hull = ConvexHull(coords)
+        coords = coords[hull.vertices,:]
+
+        # shift to zero center of gravity
+        cog = coords.mean(axis=0)
+
+        coords -= cog
+        # append last one
+        coords = np.vstack((coords, coords[0,:]))
+
+        # Find Chebyshev center
+        X = cvx.matrix(coords)
+        m = X.size[0] - 1
+
+        # Inequality description G*x <= h with h = 1
+        G, h = cvx.matrix(0.0, (m,2)), cvx.matrix(0.0, (m,1))
+        G = (X[:m,:] - X[1:,:]) * cvx.matrix([0., -1., 1., 0.],
+                (2,2))
+        h = (G * X.T)[::m+1]
+        G = cvx.mul(h[:,[0,0]]**-1, G)
+        h = cvx.matrix(1.0, (m,1))
+
+        # Chebyshev center
+        R = variable()
+        xc = variable(2)
+        lp = op(-R, [ G[k,:]*xc + R*cvx.blas.nrm2(G[k,:]) <= h[k]
+            for k in range(m) ] +[ R >= 0] )
+
+        lp.solve()
+        R = R.value
+        xc = xc.value
+
+        if lp.status == 'optimal':
+            distances.append(R[0])
+
+    return np.sum(distances) / len(cycle_basis)
