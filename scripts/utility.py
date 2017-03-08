@@ -224,6 +224,6 @@ def read_features():
                     value = float(row[1])
                     values[network_id] = value
             data[feature_name] = values
-    return data
+    return data, feature_names
 
 
