@@ -185,3 +185,18 @@ for k in [1, 2]:
 
 def species_from_id(network_id):
     return species_dict[network_id[:10]]
+
+
+def read_feature(feature_name):
+    values = {}
+    with open('features/{}.txt'.format(feature_name)) as file:
+        reader = csv.reader(file, delimiter='\t')
+        for row in reader:
+            network_id = row[0]
+            if feature_name == 'nesting_number':
+                value = [float(x) for x in row[1:]]
+            value = float(row[1])
+            values[network_id] = value
+    return values
+
+
