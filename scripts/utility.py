@@ -191,15 +191,16 @@ def species_from_id(network_id):
 
 def read_features():
     feature_names = [
+        'topological_length',
+        'nesting_numbers',
+        'vein_density',
+        'vein_distance',
         'areole_area',
         'areole_density',
+        'weighted_vein_thickness',
         'average_node_degree',
         'n_edges',
         'n_nodes',
-        'nesting_numbers',
-        'topological_length',
-        'vein_density',
-        'weighted_vein_thickness',
     ]
     data = {}
     for feature_name in feature_names:
