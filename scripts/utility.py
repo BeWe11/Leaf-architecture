@@ -182,8 +182,8 @@ for k in [1, 2]:
         reader = csv.reader(file, delimiter='\t')  #Works with elements as strings
         for row in reader:
             network_id = row[0].strip()
-            species = row[1]
-            species_dict[network_id] = species
+            genus, species = row[1].split(' ', 1)
+            species_dict[network_id] = {'genus': genus, 'species': species}
 
 def species_from_id(network_id):
     return species_dict[network_id[:10]]
