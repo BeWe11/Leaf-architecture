@@ -38,7 +38,6 @@ def clean_graph(graph):
 
     print("Applying workaround to remove spurious collinear edges.")
     removed_edges = apply_workaround(pruned)
-
     print("Pruning again.")
     pruned = prune_graph(pruned)
 
@@ -568,4 +567,3 @@ def partition_graph(network_id, G):
     #  nx.draw(G, pos=pos, node_size=0.2, edge_size=0.1)
 
     plt.show()
-

@@ -42,7 +42,7 @@ def get_total_leaf_area(G, cycles):
     return total_leaf_area
 
 
-def get_total_vein_length(G, cycles):
+def get_total_vein_length(G):
     sum_vein = 0
     for edge in G.edges():
         sum_vein += G.get_edge_data(*edge)['length']   #With * python unpacks the tuple
@@ -53,12 +53,12 @@ def get_total_vein_length(G, cycles):
 
 def vein_density(G, cycles):
     total_vein_length = get_total_vein_length(G)
-    total_leaf_area = get_total_leaf_area(G)
+    total_leaf_area = get_total_leaf_area(G, cycles)
     return total_vein_length / total_leaf_area
 
 
 def areole_area(G, cycles):
-    total_leaf_area = get_total_leaf_area(G)
+    total_leaf_area = get_total_leaf_area(G, cycles)
     return total_leaf_area / len(cycles)   #It is mean areole area
 
 
@@ -66,9 +66,9 @@ def areole_density(G, cycles):
     """
     Individual basic cycles forming G are obtained using nx.cycle_basis
     """
-    no_basis_cycles = len(basis_cycles)
-    total_leaf_area = get_total_leaf_area(G)
-    return no_basis_cycles / total_leaf_area
+    no_cycles = len(cycles)
+    total_leaf_area = get_total_leaf_area(G, cycles)
+    return no_cycles / total_leaf_area
 
 
 def weighted_vein_thickness(G, cycles):
