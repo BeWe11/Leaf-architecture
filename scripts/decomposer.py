@@ -573,6 +573,9 @@ def apply_workaround(G):
     removed_edges = []
     for n in G.nodes():
         nei = G.neighbors(n)
+        for m in nei:
+            if G.node[m]['pos'] == G.node[n]['pos']:
+                nei.remove(m)
         p1 = array([[G.node[m]['pos'][0], G.node[m]['pos'][1]] \
                 for m in nei])
         p0 = array([G.node[n]['pos'][0], G.node[n]['pos'][1]])
