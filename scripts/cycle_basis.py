@@ -238,6 +238,9 @@ def traverse_graph(G, start, nextn):
         # We ignore all neighbors we alreay visited to avoid multiple loops
 
         neighs = [n for n in G.neighbors(cur) if n != prev and n != cur]
+        for m in neighs:
+            if G.node[m]['pos'] == G.node[cur]['pos']:
+                neighs.remove(m)
 
         edges_visited.append((prev, cur))
         nodes_visited.append(cur)

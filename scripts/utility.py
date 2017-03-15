@@ -315,7 +315,19 @@ class CellGrid():
 
     @property
     def segments(self):
-        return [nx.Graph(nx.subgraph(self.G, cell.nodes)) for cell in self.cells]
+        node_coords = np.array([self.node_positions[key] for key in self.G.nodes()])
+        max_coords = np.max(node_coords, axis=0)
+        min_coords = np.min(node_coords, axis=0)
+
+        leaf_center = np.mean(node_coords, axis=0)
+        cell_centers = np.array([cell.center for cell in self.cells])
+        distances = cell_centers - leaf_center
+        relative_distances = []
+        for dist in distances:
+            relative_distance = []
+
+
+        segments = [nx.Graph(nx.subgraph(self.G, cell.nodes)) for cell in self.cells]
 
     def find_optimal_cells(self, n_cells_desired, min_cell_length, fill_ratio_threshold):
         node_coords = np.array(
@@ -557,7 +569,7 @@ def partition_graph(network_id, G):
     colors = itertools.cycle(['red', 'green', 'blue', 'yellow', 'brown',
                               'orange', 'purple', 'cyan', 'magenta'])
     for seg_number, segment in enumerate(cell_grid.segments):
-        #  nx.write_gpickle(clean_graph(segment), 'data/segments/{}_{:02d}'.format(network_id, seg_number))
+        nx.write_gpickle(clean_graph(segment), 'data/segments/{}/{}_{:02d}'.format(network_id, seg_number))
         pos = nx.get_node_attributes(segment, 'pos')
         color = next(colors)
         #  nx.draw(clean_graph(segment), pos=pos, node_size=0.2, edge_size=0.1,
