@@ -326,12 +326,11 @@ def shortest_cycles(G):
     if n_cycles >= 2:
         n_cycles += 1
 
-    print("Number of cycles including boundary: {}.".format(n_cycles))
+    #  print("Number of cycles including boundary: {}.".format(n_cycles))
 
     t0 = time.time()
 
     mst = nx.minimum_spanning_tree(G, weight=None)
-    print('test', len(G.edges()))
     for u, v in G.edges():
         if not mst.has_edge(u, v):
             # traverse cycle in both directions
@@ -340,12 +339,11 @@ def shortest_cycles(G):
 
             path, edges, coords = traverse_graph(G, v, u)
             cycleset.add(Cycle(G, edges, coords=coords))
-    print('test')
     if len(cycleset) != n_cycles:
         print("WARNING: Found only", len(cycleset), "cycles!!")
 
     t1 = time.time()
-    print("Detected fundamental cycles in {}s".format(t1 - t0))
+    #  print("Detected fundamental cycles in {}s".format(t1 - t0))
     #print "Number of detected facets:", len(cycleset)
     return list(cycleset)
 

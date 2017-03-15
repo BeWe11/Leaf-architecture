@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from scripts.decomposer import hierarchical_decomposition
 
 from scripts.analyzer import analyze_tree
+from scripts.utility import cycle_basis
 
 
 ### HELPER FUNCTIONS ###
@@ -20,16 +21,15 @@ def polygon_area(x, y):
 
 
 #Function recieves the nx.Graph generated
-def get_total_leaf_area(G):
+def get_total_leaf_area(G, cycles):
     """
     This function calculates each invidual basis cycle area, adds all the areas and
     returns the total sum, which corresponds to the leaf area
     """
-    cycle_basis = nx.cycle_basis(G)
     node_positions = nx.get_node_attributes(G,'pos')
     total_leaf_area = 0
 
-    for cycle in cycle_basis:
+    for cycle in cycles:
         x = []
         y = []
         for node in cycle:
@@ -42,7 +42,7 @@ def get_total_leaf_area(G):
     return total_leaf_area
 
 
-def get_total_vein_length(G):
+def get_total_vein_length(G, cycles):
     sum_vein = 0
     for edge in G.edges():
         sum_vein += G.get_edge_data(*edge)['length']   #With * python unpacks the tuple
@@ -51,33 +51,27 @@ def get_total_vein_length(G):
 
 ### GEOMETRICAL FEATURES ###
 
-def vein_density(G):
+def vein_density(G, cycles):
     total_vein_length = get_total_vein_length(G)
     total_leaf_area = get_total_leaf_area(G)
     return total_vein_length / total_leaf_area
 
 
-def vein_distance(G):
-    return
-
-
-def areole_area(G):
+def areole_area(G, cycles):
     total_leaf_area = get_total_leaf_area(G)
-    cycle_basis = nx.cycle_basis(G)
-    return total_leaf_area / len(cycle_basis)   #It is mean areole area
+    return total_leaf_area / len(cycles)   #It is mean areole area
 
 
-def areole_density(G):
+def areole_density(G, cycles):
     """
     Individual basic cycles forming G are obtained using nx.cycle_basis
     """
-    basis_cycles = nx.cycle_basis(G)   #Each list has node indices representing one basis cycle
     no_basis_cycles = len(basis_cycles)
     total_leaf_area = get_total_leaf_area(G)
     return no_basis_cycles / total_leaf_area
 
 
-def weighted_vein_thickness(G):
+def weighted_vein_thickness(G, cycles):
     """
     Weighted vein thickness is calculated as the total sum of the product radius(weight)*length of each
     individual vein segment divided by total vein length
@@ -92,7 +86,7 @@ def weighted_vein_thickness(G):
 
 ### TOPOLOGICAL ###
 
-def weighted_line_graph(G, average=False):
+def weighted_line_graph(G, cycles, average=False):
     """ Return a line graph of G where edge attributes are propagated
     properly. Node attributes are ignored.
     If average is set to True, perform an averaging over
@@ -167,7 +161,7 @@ def topological_length_alternative(line_graph, e, G, mode='lt'):
     return length, length_real, edges
 
 
-def topological_length(G):
+def topological_length(G, cycles):
     total_length = 0
     line_graph = weighted_line_graph(G)
     for edge in line_graph.nodes():
@@ -176,7 +170,7 @@ def topological_length(G):
     return total_length / (len(line_graph.nodes()))
 
 
-def nesting_numbers(G):
+def nesting_numbers(G, cycles):
     """
     Calculate nesting number for a *cleaned graph*, which means that
     'clean_graph' has been applied to G.
@@ -195,14 +189,13 @@ def nesting_numbers(G):
 
 
 
-def vein_distance(G):
+def vein_distance(G, cycles):
     """ approximate vein distances by finding the chebyshev
     centers of the areoles, and taking the radii.
 """
     distances = []
-    cycle_basis = nx.cycle_basis(G)
     positions = nx.get_node_attributes(G, 'pos')
-    for cycle in cycle_basis:
+    for cycle in cycles:
         coords = np.array([positions[node] for node in cycle])
         cvx.solvers.options['show_progress'] = False
 
@@ -243,4 +236,4 @@ def vein_distance(G):
         if lp.status == 'optimal':
             distances.append(R[0])
 
-    return np.sum(distances) / len(cycle_basis)
+    return np.sum(distances) / len(cycles)
