@@ -222,6 +222,11 @@ def traverse_graph(G, start, nextn):
     smallest loops (faces of the planar graph) and (b) one maximal
     outer loop
     """
+    #neighs_start = [n for n in G.neighbors(start)]
+    #if len(neighs_start) == 1:
+    #if G.node[neighs_start[0]]['pos'] == G.node[start]['pos']:
+    #        start = neighs_start[0]
+
     start_coords = array([G.node[start]['pos'][0], G.node[start]['pos'][1]])
     nodes_visited = [start]
     nodes_visited_set = set()
@@ -238,11 +243,17 @@ def traverse_graph(G, start, nextn):
         # We ignore all neighbors we alreay visited to avoid multiple loops
 
         neighs = [n for n in G.neighbors(cur) if n != prev and n != cur]
+        #print(neighs)
+        for m in neighs:
+            if G.node[m]['pos'] == G.node[cur]['pos']:
+                neighs.remove(m)
+        #        print(G.node[m]['pos'], G.node[cur]['pos'])
 
         edges_visited.append((prev, cur))
         nodes_visited.append(cur)
         coords.append(cur_coords)
 
+        #print(neighs)
         n_neighs = len(neighs)
         if n_neighs > 1:
             # Choose path that keeps the loop closest on the left hand side
@@ -333,6 +344,9 @@ def shortest_cycles(G):
     mst = nx.minimum_spanning_tree(G, weight=None)
     for u, v in G.edges():
         if not mst.has_edge(u, v):
+            if G.node[u]['pos'] == G.node[v]['pos']:
+                continue
+
             # traverse cycle in both directions
             path, edges, coords = traverse_graph(G, u, v)
             cycleset.add(Cycle(G, edges, coords=coords))
