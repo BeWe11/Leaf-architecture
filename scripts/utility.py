@@ -30,6 +30,11 @@ def clean_graph(graph):
 
     #  graph = con[0]
 
+    print("Removing nodes with same positions.")
+    for u, v in graph.edges():
+        if graph.node[u]['pos'] == graph.node[v]['pos']:
+            graph.remove_edge(u, v)
+
     print("Removing intersecting edges.")
     remove_intersecting_edges(graph)
 
