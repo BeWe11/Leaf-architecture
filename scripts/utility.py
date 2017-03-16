@@ -30,6 +30,11 @@ def clean_graph(graph):
 
     #  graph = con[0]
 
+    print("Removing nodes with same positions.")
+    for u, v in graph.edges():
+        if np.all(graph.node[u]['pos'] == graph.node[v]['pos']):
+            graph.remove_edge(u, v)
+
     print("Removing intersecting edges.")
     remove_intersecting_edges(graph)
 
@@ -325,10 +330,19 @@ class CellGrid():
         distances = cell_centers - leaf_center
         relative_distances = []
         for dist in distances:
-            relative_distance = []
+            if dist[0] < 0:
+                rel_x = -dist[0] / min_coords[0]
+            else:
+                rel_x = dist[0] / max_coords[0]
+            if dist[1] < 0:
+                rel_y = -dist[1] / min_coords[1]
+            else:
+                rel_y = dist[1] / max_coords[1]
+            relative_distances.append([rel_x, rel_y])
 
 
         segments = [nx.Graph(nx.subgraph(self.G, cell.nodes)) for cell in self.cells]
+        return segments, relative_distances
 
     def find_optimal_cells(self, n_cells_desired, min_cell_length, fill_ratio_threshold):
         node_coords = np.array(
@@ -480,8 +494,9 @@ class CellGrid():
         counts = (cycle_nodes_in_cells != 0).sum(2)
         max_cell_indices = np.argmax(counts, axis=0)
 
+        n_cycles = len(max_cell_indices)
         for cycle_index, cell_index in enumerate(max_cell_indices):
-            print('cycle_index: {}'.format(cycle_index))
+            print('cycle_index: {} / {}'.format(cycle_index, n_cycles))
             cycle = cycles[cycle_index]
             cycle_center = cycle_centers[cycle_index]
 
@@ -569,15 +584,17 @@ def partition_graph(network_id, G):
 
     colors = itertools.cycle(['red', 'green', 'blue', 'yellow', 'brown',
                               'orange', 'purple', 'cyan', 'magenta'])
-    for seg_number, segment in enumerate(cell_grid.segments):
-        nx.write_gpickle(clean_graph(segment), 'data/segments/{}/{}_{:02d}'.format(network_id, seg_number))
-        pos = nx.get_node_attributes(segment, 'pos')
-        color = next(colors)
-        #  nx.draw(clean_graph(segment), pos=pos, node_size=0.2, edge_size=0.1,
-        nx.draw(segment, pos=pos, node_size=0.2, edge_size=0.1,
-                node_color=color, edge_color=color, alpha=1.0)
-    #  pos = nx.get_node_attributes(G, 'pos')
-    #  nx.draw(G, pos=pos, node_size=0.2, edge_size=0.1)
 
-    plt.show()
+    segments, relative_distances = cell_grid.segments
+    print(relative_distances)
+
+    for seg_number, segment in enumerate(segments):
+        nx.write_gpickle(segment, 'data/segments/{}/{:02d}_{}_{}'.format(
+            network_id, seg_number, relative_distances[seg_number][0], relative_distances[seg_number][1]))
+        #  pos = nx.get_node_attributes(segment, 'pos')
+        #  color = next(colors)
+        #  nx.draw(segment, pos=pos, node_size=0.2, edge_size=0.1,
+        #          node_color=color, edge_color=color, alpha=1.0)
+
+    #  plt.show()
 

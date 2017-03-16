@@ -348,7 +348,7 @@ def remove_outer_from_dual(G, dual, outer, new_connections=True):
     # Remove original boundary node
     dual.remove_node(outer_n)
 
-def hierarchical_decomposition(leaf, avg_fun=None,
+def hierarchical_decomposition(leaf, cycles, avg_fun=None,
         include_externals=False, remove_outer=True,
         filtration_steps=100):
     """
@@ -368,8 +368,8 @@ def hierarchical_decomposition(leaf, avg_fun=None,
         avg_fun = lambda c, w: average(c, weights=w)
 
     # Preprocessing
-    print("Detecting minimal cycles.")
-    cycles = shortest_cycles(leaf)
+    #  print("Detecting minimal cycles.")
+    #  cycles = shortest_cycles(leaf)
 
     print("Constructing dual.")
     dual = cycle_dual(leaf, cycles, avg_fun=avg_fun)
@@ -573,9 +573,6 @@ def apply_workaround(G):
     removed_edges = []
     for n in G.nodes():
         nei = G.neighbors(n)
-        for m in nei:
-            if G.node[m]['pos'] == G.node[n]['pos']:
-                nei.remove(m)
         p1 = array([[G.node[m]['pos'][0], G.node[m]['pos'][1]] \
                 for m in nei])
         p0 = array([G.node[n]['pos'][0], G.node[n]['pos'][1]])

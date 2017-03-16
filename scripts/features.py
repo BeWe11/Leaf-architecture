@@ -51,6 +51,15 @@ def get_total_vein_length(G, cycles):
 
 ### GEOMETRICAL FEATURES ###
 
+def n_nodes(G, cycles):
+    return nx.number_of_nodes(G)
+
+def n_edges(G, cycles):
+    return nx.number_of_edges(G)
+
+def average_node_degree(G, cycles):
+    return np.mean(list(G.degree().values()))
+
 def vein_density(G, cycles):
     total_vein_length = get_total_vein_length(G)
     total_leaf_area = get_total_leaf_area(G)
@@ -175,7 +184,7 @@ def nesting_numbers(G, cycles):
     Calculate nesting number for a *cleaned graph*, which means that
     'clean_graph' has been applied to G.
     """
-    tree, _, _ = hierarchical_decomposition(G)
+    tree, _, _ = hierarchical_decomposition(G, cycles)
     tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
     tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext = analyze_tree(tree)
 
