@@ -348,7 +348,7 @@ def remove_outer_from_dual(G, dual, outer, new_connections=True):
     # Remove original boundary node
     dual.remove_node(outer_n)
 
-def hierarchical_decomposition(leaf, cycles, avg_fun=None,
+def hierarchical_decomposition(leaf, avg_fun=None,
         include_externals=False, remove_outer=True,
         filtration_steps=100):
     """
@@ -368,8 +368,8 @@ def hierarchical_decomposition(leaf, cycles, avg_fun=None,
         avg_fun = lambda c, w: average(c, weights=w)
 
     # Preprocessing
-    #  print("Detecting minimal cycles.")
-    #  cycles = shortest_cycles(leaf)
+    print("Detecting minimal cycles.")
+    cycles = shortest_cycles(leaf)
 
     print("Constructing dual.")
     dual = cycle_dual(leaf, cycles, avg_fun=avg_fun)
@@ -547,7 +547,7 @@ def hierarchical_decomposition(leaf, cycles, avg_fun=None,
             tree.remove_nodes_from(ext)
 
         # Counter to index new nodes
-        print("Step {}/{}\n".format(k, max_node))
+        # print("Step {}/{}\n".format(k, max_node))
         #with open('log') as file:
             #file.write("Step {}/{}\n".format(k, max_node))
         k += 1

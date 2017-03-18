@@ -244,9 +244,9 @@ def traverse_graph(G, start, nextn):
 
         neighs = [n for n in G.neighbors(cur) if n != prev and n != cur]
         #print(neighs)
-        for m in neighs:
-            if G.node[m]['pos'] == G.node[cur]['pos']:
-                neighs.remove(m)
+        #for m in neighs:
+        #    if G.node[m]['pos'] == G.node[cur]['pos']:
+        #        neighs.remove(m)
         #        print(G.node[m]['pos'], G.node[cur]['pos'])
 
         edges_visited.append((prev, cur))
@@ -344,8 +344,8 @@ def shortest_cycles(G):
     mst = nx.minimum_spanning_tree(G, weight=None)
     for u, v in G.edges():
         if not mst.has_edge(u, v):
-            if G.node[u]['pos'] == G.node[v]['pos']:
-                continue
+            #if G.node[u]['pos'] == G.node[v]['pos']:
+            #    continue
 
             # traverse cycle in both directions
             path, edges, coords = traverse_graph(G, u, v)

@@ -95,7 +95,7 @@ def weighted_vein_thickness(G, cycles):
 
 ### TOPOLOGICAL ###
 
-def weighted_line_graph(G, cycles, average=False):
+def weighted_line_graph(G, average=False):
     """ Return a line graph of G where edge attributes are propagated
     properly. Node attributes are ignored.
     If average is set to True, perform an averaging over
@@ -184,7 +184,7 @@ def nesting_numbers(G, cycles):
     Calculate nesting number for a *cleaned graph*, which means that
     'clean_graph' has been applied to G.
     """
-    tree, _, _ = hierarchical_decomposition(G, cycles)
+    tree, _, _ = hierarchical_decomposition(G)
     tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
     tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext = analyze_tree(tree)
 
