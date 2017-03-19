@@ -9,11 +9,11 @@ import itertools
 from matplotlib import pyplot as plt
 from matplotlib.path import Path as mplPath
 
-from scripts.decomposer import sorted_connected_components, \
+from scripts.NET.decomposer import sorted_connected_components, \
                                remove_intersecting_edges, \
                                prune_graph, \
                                apply_workaround
-from scripts.cycle_basis import shortest_cycles
+from scripts.NET.cycle_basis import shortest_cycles
 
 
 def cycle_basis(G):
@@ -315,7 +315,8 @@ class Cell():
 
 class CellGrid():
     """
-    The cell grid with which a leaf is segmented.
+    The cell grid with which a leaf is segmented. The methods in hear were
+    written in a rush and can probably be rewritten much more efficiently.
     """
     def __init__(self, G, n_cells_desired=100, min_cell_length=0,
                  fill_ratio_threshold=0.5):
@@ -328,6 +329,9 @@ class CellGrid():
 
     @property
     def segments(self):
+        """
+        Return subgraphs containing the segments.
+        """
         node_coords = np.array([self.node_positions[key] for key in self.G.nodes()])
         max_coords = np.max(node_coords, axis=0)
         min_coords = np.min(node_coords, axis=0)
@@ -346,7 +350,6 @@ class CellGrid():
             else:
                 rel_y = dist[1] / max_coords[1]
             relative_distances.append([rel_x, rel_y])
-
 
         segments = [nx.Graph(nx.subgraph(self.G, cell.nodes)) for cell in self.cells]
         return segments, relative_distances
@@ -484,6 +487,7 @@ class CellGrid():
             cycle_center = np.mean([self.node_positions[node] for node in cycle], axis=0)
             cycle_centers.append(cycle_center)
 
+        # For every cycle, find out to which cells its nodes belong
         largest_cycle_size = max([len(cycle) for cycle in cycles])
         cycle_nodes_in_cells = np.zeros((len(self.cells), len(cycles), largest_cycle_size), dtype=int)
         for cell_index, cell in enumerate(self.cells):
@@ -498,6 +502,8 @@ class CellGrid():
         counts = (cycle_nodes_in_cells != 0).sum(2)
         max_cell_indices = np.argmax(counts, axis=0)
 
+        # Find connected tree-like structures for cycle nodes that were
+        # moved to a different cell
         n_cycles = len(max_cell_indices)
         for cycle_index, cell_index in enumerate(max_cell_indices):
             print('cycle_index: {} / {}'.format(cycle_index, n_cycles))
@@ -511,9 +517,12 @@ class CellGrid():
                 for neighbor in neighbors:
                     if not neighbor in all_cycle_nodes:
                         polygon = mplPath(np.array([self.node_positions[node] for node in cycle]))
+
+                        # Add the whole tree structure to the cell that contains its first edge
                         if polygon.contains_point(self.node_positions[neighbor]):
                             tree_structure = self.traverse_tree_structure(neighbor, node, all_cycle_nodes)
                             tree_structures.append(tree_structure)
+
             for tree_structure in tree_structures:
                 for node in tree_structure:
                     for cell in self.cells:
@@ -523,6 +532,10 @@ class CellGrid():
             self.cells[cell_index].nodes = list(set(self.cells[cell_index].nodes + list(cycle)))
 
     def traverse_tree_structure(self, start_node, root_node, all_cycle_nodes):
+        """
+        Find a complete tree-like structure by following the first edge until
+        all terminal nodes are found.
+        """
         visited_nodes = [root_node, start_node]
         current_nodes = [start_node]
         while len(current_nodes) > 0:
@@ -569,6 +582,10 @@ def normalized_graph(network_id, G):
 
 
 def partition_graph(network_id, G):
+    """
+    Partition a graph into roughly square shaped pieces, while keeping
+    basis cycles intact.
+    """
     with open('features/vein_distance.txt') as file:
         reader = csv.reader(file, delimiter='\t')
         for row in reader:
@@ -580,8 +597,7 @@ def partition_graph(network_id, G):
     cell_grid = CellGrid(
         G,
         n_cells_desired=20,
-        min_cell_length=0,
-        #  min_cell_length=10*vein_distance,
+        min_cell_length=10*vein_distance,
         fill_ratio_threshold=0.75,
     )
     print('len(cell_grid.cells): {}'.format(len(cell_grid.cells)))
@@ -595,10 +611,3 @@ def partition_graph(network_id, G):
     for seg_number, segment in enumerate(segments):
         nx.write_gpickle(segment, 'data/segments/{}/{:02d}_{}_{}'.format(
             network_id, seg_number, relative_distances[seg_number][0], relative_distances[seg_number][1]))
-        #  pos = nx.get_node_attributes(segment, 'pos')
-        #  color = next(colors)
-        #  nx.draw(segment, pos=pos, node_size=0.2, edge_size=0.1,
-        #          node_color=color, edge_color=color, alpha=1.0)
-
-    #  plt.show()
-

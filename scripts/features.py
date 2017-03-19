@@ -1,15 +1,10 @@
 import numpy as np
 import networkx as nx
-import cvxopt as cvx
-from cvxopt.modeling import variable, op
-from scipy.spatial import ConvexHull
 from matplotlib import pyplot as plt
 
-from scripts.decomposer import hierarchical_decomposition
-
-from scripts.analyzer import analyze_tree, topological_length_for_edge, \
-                             weighted_line_graph
-from scripts.utility import cycle_basis
+from scripts.NET.decomposer import hierarchical_decomposition
+from scripts.NET.analyzer import analyze_tree, topological_length_for_edge, \
+                                 weighted_line_graph, vein_distance_net
 
 
 ### HELPER FUNCTIONS ###
@@ -24,7 +19,7 @@ def polygon_area(x, y):
 def get_total_leaf_area(G, cycles):
     """
     This function calculates each invidual basis cycle area, adds all the areas and
-    returns the total sum, which corresponds to the leaf area
+    returns the total sum, which corresponds to the leaf area.
     """
     node_positions = nx.get_node_attributes(G,'pos')
     total_leaf_area = 0
@@ -52,28 +47,43 @@ def get_total_vein_length(G):
 ### GEOMETRICAL FEATURES ###
 
 def n_nodes(G, cycles):
+    """
+    Return number of nodes.
+    """
     return nx.number_of_nodes(G)
 
+
 def n_edges(G, cycles):
+    """
+    Return number of edges.
+    """
     return nx.number_of_edges(G)
+
 
 def average_node_degree(G, cycles):
     return np.mean(list(G.degree().values()))
 
+
 def vein_density(G, cycles):
+    """
+    Return vein length per area.
+    """
     total_vein_length = get_total_vein_length(G)
     total_leaf_area = get_total_leaf_area(G, cycles)
     return total_vein_length / total_leaf_area
 
 
 def areole_area(G, cycles):
+    """
+    Return mean areole area.
+    """
     total_leaf_area = get_total_leaf_area(G, cycles)
     return total_leaf_area / len(cycles)
 
 
 def areole_density(G, cycles):
     """
-    Individual basic cycles forming G are obtained using nx.cycle_basis
+    Return number of areoles per area.
     """
     no_cycles = len(cycles)
     total_leaf_area = get_total_leaf_area(G, cycles)
@@ -82,8 +92,7 @@ def areole_density(G, cycles):
 
 def weighted_vein_thickness(G, cycles):
     """
-    Weighted vein thickness is calculated as the total sum of the product radius(weight)*length of each
-    individual vein segment divided by total vein length
+    Return average product of length*radius for all edges.
     """
     total_vein_length = get_total_vein_length(G)
     individual_weighted_vein_thickness = 0
@@ -93,9 +102,23 @@ def weighted_vein_thickness(G, cycles):
     return weighted_vein_thickness
 
 
+def vein_distance(G, cycles):
+    """
+    Return average distance between veins approximated by the radii of
+    circles inscribed into the areoles.
+    """
+    return vein_distance_net(G, cycles)
+
+
 ### TOPOLOGICAL ###
 
 def topological_length(G, cycles):
+    """
+    Return average tapering length, i.e. the number of nodes one can follow
+    from an starting edge one follows the thickest neighboring edge that is
+    smaller than then current edge. 'G' has to be clean, i.e. 'clean_graph'
+    has been applied to it.
+    """
     total_length = 0
     line_graph = weighted_line_graph(G)
     for edge in line_graph.nodes():
@@ -106,8 +129,8 @@ def topological_length(G, cycles):
 
 def nesting_numbers(G, cycles):
     """
-    Calculate nesting number for a *cleaned graph*, which means that
-    'clean_graph' has been applied to G.
+    Return the number, i.e. the average left-right asymmetry in the nesting
+    tree. 'G' has to be clean, i.e. 'clean_graph' has been applied to it.
     """
     tree, _, _ = hierarchical_decomposition(G)
     tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
@@ -120,54 +143,3 @@ def nesting_numbers(G, cycles):
 
     return nesting_number_weighted, nesting_number_weighted_no_ext, \
            nesting_number_unweighted, nesting_number_unweighted_no_ext
-
-
-
-def vein_distance(G, cycles):
-    """ approximate vein distances by finding the chebyshev
-    centers of the areoles, and taking the radii.
-"""
-    distances = []
-    positions = nx.get_node_attributes(G, 'pos')
-    for cycle in cycles:
-        coords = np.array([positions[node] for node in cycle])
-        cvx.solvers.options['show_progress'] = False
-
-        # find convex hull to make approximation
-        # possible
-        hull = ConvexHull(coords)
-        coords = coords[hull.vertices,:]
-
-        # shift to zero center of gravity
-        cog = coords.mean(axis=0)
-
-        coords -= cog
-        # append last one
-        coords = np.vstack((coords, coords[0,:]))
-
-        # Find Chebyshev center
-        X = cvx.matrix(coords)
-        m = X.size[0] - 1
-
-        # Inequality description G*x <= h with h = 1
-        G, h = cvx.matrix(0.0, (m,2)), cvx.matrix(0.0, (m,1))
-        G = (X[:m,:] - X[1:,:]) * cvx.matrix([0., -1., 1., 0.],
-                (2,2))
-        h = (G * X.T)[::m+1]
-        G = cvx.mul(h[:,[0,0]]**-1, G)
-        h = cvx.matrix(1.0, (m,1))
-
-        # Chebyshev center
-        R = variable()
-        xc = variable(2)
-        lp = op(-R, [ G[k,:]*xc + R*cvx.blas.nrm2(G[k,:]) <= h[k]
-            for k in range(m) ] +[ R >= 0] )
-
-        lp.solve()
-        R = R.value
-        xc = xc.value
-
-        if lp.status == 'optimal':
-            distances.append(R[0])
-
-    return np.sum(distances) / len(cycles)

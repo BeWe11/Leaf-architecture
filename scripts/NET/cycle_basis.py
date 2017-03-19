@@ -11,7 +11,22 @@ import matplotlib.pyplot as plt
 from itertools import chain
 from collections import defaultdict
 import time
-from .helpers import *
+
+
+def sorted_connected_components(G):
+    """ Return a list of connected component subgraphs of G sorted by
+    size, largest first
+    """
+    return sorted(nx.connected_component_subgraphs(G),
+            reverse=True, key=len)
+
+def sorted_connected_components_copy(G):
+    """ Like sorted_connected_components, but don't return subgraphs
+    but copy instead
+    """
+    return sorted(nx.connected_components(G),
+            reverse=True, key=len)
+
 
 class Cycle():
     """ Represents a set of nodes that make up a cycle in some

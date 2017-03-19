@@ -10,8 +10,12 @@
     2017 adapted by Benjamin Weigang and Alan Preciado
 """
 from numpy import *
+import numpy as np
 from numpy import ma
 import networkx as nx
+import cvxopt as cvx
+from cvxopt.modeling import variable, op
+from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 
 
@@ -77,20 +81,6 @@ def topological_length_for_edge(line_graph, e, G, mode='lt'):
         edges.append(current_node)
 
     return length, length_real, edges
-
-
-def asymmetry(marked_tree):
-    """ Returns the tree asymmetry after Van Pelt using
-    the marked tree.
-    """
-    parts = [marked_tree.node[n]['partition-asymmetry']
-            for n, d in marked_tree.degree_iter() if d > 1]
-
-    weights = [marked_tree.node[n]['subtree-degree'] - 1
-            for n, d in marked_tree.degree_iter() if d > 1]
-
-    if len(weights) > 0:
-        return average(parts, weights=weights)
 
 
 def mark_subtrees(tree):
@@ -199,187 +189,6 @@ def remove_external_nodes(tree):
     return no_ext_tree
 
 
-def average_asymmetry(marked_tree, delta, Delta, attr='asymmetry-simple'):
-    """ Returns the average asymmetry of all subtrees of tree whose
-        degree is within Delta/2 from delta
-    """
-    asymmetries = array([marked_tree.node[n][attr]
-            for n in marked_tree.nodes_iter()
-            if abs(marked_tree.node[n]['subtree-degree'] - delta) <=
-            Delta/2.])
-
-    if len(asymmetries) > 0:
-        return mean(asymmetries)
-    else:
-        return float('NaN')
-
-
-def normalized_area_distribution(tree, bins):
-    """ Returnes the set of normalized non-external areas associated
-    to the hierarchical decomposition,
-    the normalized probability distribution P[A = a] and the
-    cumulative probability distribution P[A > a]
-    """
-    areas = array([tree.node[n]['cycle_area'] for n in tree.nodes_iter() \
-            if not tree.node[n]['external']])
-
-    areas /= areas.max()
-
-    hist, bin_edges = histogram(areas, bins=bins, density=True)
-
-    normed = hist/bins
-    cumul = 1. - cumsum(normed)
-
-    return areas, normed, cumul
-
-
-def low_level_avg_asymmetries(tree, degree, Delta,
-        attr='asymmetry-simple'):
-    """ Cuts the tree at given degree level and calculates the
-    average asymmetries for the resulting subtrees.
-    """
-    tree_new = tree.copy()
-
-    nodes_to_rem = [n for n in tree.nodes_iter()
-            if tree.node[n]['subtree-degree'] >= degree]
-    tree_new.remove_nodes_from(nodes_to_rem)
-
-    roots = [n for n in tree_new.nodes_iter()
-            if len(tree_new.predecessors(n)) == 0 and
-            len(tree_new.successors(n)) == 2]
-
-    return subtree_asymmetries(tree_new, roots, Delta, attr=attr)
-
-
-def subtree_asymmetries(tree, roots, Delta, attr='asymmetry-simple'):
-    """ Calculates the average asymmetry functions for the
-    subtrees rooted at the nodes given in roots.
-    """
-    subtrees = [nx.DiGraph(tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
-            for r in roots]
-
-    reslt = []
-    for s, r in zip(subtrees, roots):
-        s.graph['root'] = r
-
-        degree = s.node[r]['subtree-degree']
-        degrees = array(sorted(list(set([
-            s.node[n]['subtree-degree']
-            for n in s.nodes_iter()]))))
-
-        reslt.append([degrees,
-            [average_asymmetry(s, d, Delta, attr=attr)
-                for d in degrees]])
-
-    return reslt
-
-
-def get_subtrees(tree, roots, mode='all', area=0, degree=0):
-    """ Extracts the subtrees rooted at roots from tree.
-    If a mode is given, further restricts to a sub-subtree which
-    has some desired property.
-
-    Parameters:
-        tree: The hierarchical, marked tree we are interested in.
-
-        roots: The root node ids of the subtrees we are interested in
-
-        mode:
-            'all': extract full subtree
-            'area': extract subtree whose loop area is closest to area
-            'degree': extract subtree whose degree is closest to degree
-
-        area: The area for the 'area' mode
-
-        degree: The degree for the 'degree' mode
-
-    Returns:
-        subtrees: List of requested subtrees
-
-        roots: List of roots of the requested subtrees
-    """
-    # Obtain subtrees as subgraphs and properly set root nodes
-    subtrees = [nx.DiGraph(tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
-            for r in roots]
-
-    if mode == 'area':
-        roots = []
-        for st in subtrees:
-            # Find node with area closest to area
-            ar, root = min([(abs(data['cycle_area'] - area), r)
-                for r, data in st.nodes_iter(data=True)])
-            ar = st.node[root]['cycle_area']
-
-            roots.append(root)
-
-            print("Subtree closest to {} has area {}, degree {}, root {}".format(area,
-                    ar, st.node[root]['subtree-degree'], root))
-
-        # Recalculate subtrees
-        subtrees = [nx.DiGraph(
-            tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
-            for r in roots]
-
-    elif mode == 'degree':
-        roots = []
-        for st in subtrees:
-            # Find node with degree closest to degree
-            de, root = min([(abs(data['subtree-degree'] - degree), r)
-                for r, data in st.nodes_iter(data=True)])
-            de = st.node[root]['subtree-degree']
-
-            roots.append(root)
-
-            print("Subtree closest to {} has degree {}, area {}, root {}".format(
-                    degree, de, st.node[root]['cycle_area'], root))
-
-        # Recalculate subtrees
-        subtrees = [nx.DiGraph(
-            tree.subgraph(nx.dfs_tree(tree, r).nodes_iter()))
-            for r in roots]
-
-    # Save subtree roots in tree attributes
-    for s, r in zip(subtrees, roots):
-        s.graph['root'] = r
-        s.node[r]['order'] = 0
-
-    return subtrees, roots
-
-
-def subtree_asymmetries_areas(tree, roots, attr='asymmetry-simple',
-        area=0):
-    """ Calculates the average asymmetry functions for the subtrees
-    rooted at the nodes given in roots.
-    Returns a list of lists (one for each subtree) of tuples
-    of the form (asymmetry, degree, area)
-    as well as the subtrees.
-
-    This is the complete set of raw data from hierarchical
-    decomposition.
-
-    if area is equal to zero, returns the full selected subtrees.
-    Otherwise, returns for each selected subtree that sub-subtree
-    whose area is closest to the given area (in square pixels)
-    """
-
-    if area > 0:
-        subtrees, roots = get_subtrees(tree, roots, mode='area',
-                area=area)
-    else:
-        subtrees, roots = get_subtrees(tree, roots)
-
-    reslt = []
-    for s, r in zip(subtrees, roots):
-        dist = [(s.node[n][attr], s.node[n]['subtree-degree'],
-            s.node[n]['cycle_area']) for n in s.nodes_iter()]
-
-        dist = [(q, d, a) for q, d, a in dist if a > 0 and d > 0]
-
-        reslt.append(dist)
-
-    return reslt, subtrees
-
-
 def analyze_tree(tree):
     # calculate metrics
     horton_strahler = 0
@@ -403,7 +212,6 @@ def analyze_tree(tree):
     tree_asymmetry_unweighted_no_ext = marked_tree_no_ext.node[
             marked_tree_no_ext.graph['root']]['asymmetry-unweighted']
 
-    #areas, area_hist, cumul = normalized_area_distribution(tree, 100)
     areas = array([tree_no_ext.node[n]['cycle_area']
         for n in tree_no_ext.nodes_iter()])
 
@@ -413,3 +221,53 @@ def analyze_tree(tree):
 
     return tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
            tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext, \
+
+
+def vein_distance_net(G, cycles):
+    """ approximate vein distances by finding the chebyshev
+    centers of the areoles, and taking the radii.
+"""
+    distances = []
+    positions = nx.get_node_attributes(G, 'pos')
+    for cycle in cycles:
+        coords = np.array([positions[node] for node in cycle])
+        cvx.solvers.options['show_progress'] = False
+
+        # find convex hull to make approximation
+        # possible
+        hull = ConvexHull(coords)
+        coords = coords[hull.vertices,:]
+
+        # shift to zero center of gravity
+        cog = coords.mean(axis=0)
+
+        coords -= cog
+        # append last one
+        coords = np.vstack((coords, coords[0,:]))
+
+        # Find Chebyshev center
+        X = cvx.matrix(coords)
+        m = X.size[0] - 1
+
+        # Inequality description G*x <= h with h = 1
+        G, h = cvx.matrix(0.0, (m,2)), cvx.matrix(0.0, (m,1))
+        G = (X[:m,:] - X[1:,:]) * cvx.matrix([0., -1., 1., 0.],
+                (2,2))
+        h = (G * X.T)[::m+1]
+        G = cvx.mul(h[:,[0,0]]**-1, G)
+        h = cvx.matrix(1.0, (m,1))
+
+        # Chebyshev center
+        R = variable()
+        xc = variable(2)
+        lp = op(-R, [ G[k,:]*xc + R*cvx.blas.nrm2(G[k,:]) <= h[k]
+            for k in range(m) ] +[ R >= 0] )
+
+        lp.solve()
+        R = R.value
+        xc = xc.value
+
+        if lp.status == 'optimal':
+            distances.append(R[0])
+
+    return np.sum(distances) / len(cycles)
