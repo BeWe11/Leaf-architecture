@@ -20,51 +20,40 @@
     All other functions should be treated as internal.
 
     2013 Henrik Ronellenfitsch
+
+    2017 adapted by Benjamin Weigang and Alan Preciado
 """
 
 from numpy import *
-from numpy import ma
-import numpy.random
-#import numpy as np
-
-import scipy
-import scipy.sparse
-import scipy.spatial
-
 import networkx as nx
 
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.path import Path
 from functools import reduce
 
-if matplotlib.__version__ >= '1.3.0':
-    from matplotlib.path import Path
-else:
-    from matplotlib import nxutils
-
 from itertools import chain
-from itertools import filterfalse
-
 from itertools import tee
-
-from collections import defaultdict
-
-import random
-import argparse
-import os
-import time
-import sys
-
-from . import storage
-from . import plot
 
 #from blist import sortedlist
 from sortedcontainers import SortedList as sortedlist
 
 from .cycle_basis import *
-from .helpers import *
+
+
+def sorted_connected_components(G):
+    """ Return a list of connected component subgraphs of G sorted by
+    size, largest first
+    """
+    return sorted(nx.connected_component_subgraphs(G),
+            reverse=True, key=len)
+
+def sorted_connected_components_copy(G):
+    """ Like sorted_connected_components, but don't return subgraphs
+    but copy instead
+    """
+    return sorted(nx.connected_components(G),
+            reverse=True, key=len)
+
 
 class Filtration():
     """ Represents the filtration of a graph in a memory-efficient way
@@ -159,21 +148,6 @@ class Filtration():
 
         self.iter_return_step_nums = False
 
-def path_subgraph(G, path, edges):
-    """ Returns the subgraph of G induced by the given path (ordered collection
-    of nodes)
-    """
-    subgraph = G.subgraph(path).copy()
-    edges = set(edges)
-
-    to_remove = []
-    for e in subgraph.edges():
-        if not e in edges and not e[::-1] in edges:
-            to_remove.append(e)
-
-    subgraph.remove_edges_from(to_remove)
-
-    return subgraph
 
 def prune_graph(G):
     """
@@ -211,6 +185,7 @@ def prune_graph(G):
 
     return pruned
 
+
 def connected_component_subgraphs_nocopy(G):
     """Return connected components as subgraphs. This is like
     networkx's standard routine, but does not perform a deep copy
@@ -221,6 +196,7 @@ def connected_component_subgraphs_nocopy(G):
     for c in cc:
         graph_list.append(G.subgraph(c))
     return graph_list
+
 
 def prune_dual(leaf, dual):
     """ Modifies both leaf and dual by removing all cycles not
@@ -255,6 +231,7 @@ def prune_dual(leaf, dual):
     # remove disconnected nodes from original graph
     nodes_to_rem = [n for n in nodes_to_rem if leaf.degree(n) == 0]
     leaf.remove_nodes_from(nodes_to_rem)
+
 
 def cycle_dual(G, cycles, avg_fun=None):
     """
@@ -311,6 +288,7 @@ def cycle_dual(G, cycles, avg_fun=None):
 
     return dual
 
+
 def remove_outer_from_dual(G, dual, outer, new_connections=True):
     """ Removes the outermost loop from the dual graph
     and creates new nodes for each loop bordering it.
@@ -348,7 +326,9 @@ def remove_outer_from_dual(G, dual, outer, new_connections=True):
     # Remove original boundary node
     dual.remove_node(outer_n)
 
-def hierarchical_decomposition(leaf, cycles, avg_fun=None,
+
+def hierarchical_decomposition(leaf, avg_fun=None,
+#  def hierarchical_decomposition(leaf, cycles, avg_fun=None,
         include_externals=False, remove_outer=True,
         filtration_steps=100):
     """
@@ -367,9 +347,9 @@ def hierarchical_decomposition(leaf, cycles, avg_fun=None,
     if avg_fun == None:
         avg_fun = lambda c, w: average(c, weights=w)
 
-    # Preprocessing
-    #  print("Detecting minimal cycles.")
-    #  cycles = shortest_cycles(leaf)
+    #  Preprocessing
+    print("Detecting minimal cycles.")
+    cycles = shortest_cycles(leaf)
 
     print("Constructing dual.")
     dual = cycle_dual(leaf, cycles, avg_fun=avg_fun)
@@ -564,6 +544,7 @@ def hierarchical_decomposition(leaf, cycles, avg_fun=None,
 
     return tree, dual_orig, filtration
 
+
 def apply_workaround(G):
     """ Applies a workaround to the graph which removes all
     exactly collinear edges.
@@ -669,109 +650,3 @@ def remove_intersecting_edges(G):
                     print(((u1, v1), (u2, v2)))
 
     G.remove_edges_from(edges_to_rem)
-
-if __name__ == '__main__':
-    params = {'mathtext.fontset': 'stixsans'}
-    plt.rcParams.update(params)
-
-    plt.ion()
-    parser = argparse.ArgumentParser("Leaf Decomposer.")
-    parser.add_argument('INPUT', help="Input file in .gpickle format" \
-    " containing the unpruned leaf data as a graph.")
-    parser.add_argument('-s', '--save', help="Saves the hierarchical tree in" \
-    " the given pickle file", type=str, default="")
-    parser.add_argument('-p', '--plot', help="Plots the intermediate results.",\
-    action='store_true')
-    parser.add_argument('-a', '--average-intersection',
-            help="Use average of edge conductivities instead of minimum",
-            action="store_true")
-    parser.add_argument('-e', '--no-external-loops',
-            help='If set, do not assign virtual external loops',
-            action='store_true')
-    parser.add_argument('-w', '--workaround',
-            help="Use workaround to remove spurious collinear edges.",
-            action='store_true')
-    parser.add_argument('-f', '--filtration-steps',
-            help='Number of steps at which a new filtration should be stored', type=int, default=1000)
-    parser.add_argument('-i', '--inverse-intersection', action='store_true',
-            help='use inverse sum of edge conductivities')
-
-    args = parser.parse_args()
-
-    print(("Loading file {}.".format(args.INPUT)))
-    leaf = nx.read_gpickle(args.INPUT)
-
-    print("Removing disconnected parts")
-    con = sorted_connected_components(leaf)
-    if len(con) == 0:
-        print("This graph is empty!!")
-        print("Have a nice day.")
-        sys.exit(0)
-
-    leaf = con[0]
-
-    print("Removing intersecting edges.")
-    remove_intersecting_edges(leaf)
-
-    print("Pruning.")
-    pruned = prune_graph(leaf)
-
-    if args.workaround:
-        print("Applying workaround to remove spurious collinear edges.")
-        removed_edges = apply_workaround(pruned)
-
-        print("Pruning again.")
-        pruned = prune_graph(pruned)
-    else:
-        removed_edges = []
-
-    con = sorted_connected_components(pruned)
-    print(("Connected components:", len(con)))
-
-    if len(con) == 0:
-        print("This graph is empty!!")
-        print("Have a nice day.")
-        sys.exit(0)
-
-    print("Decomposing largest connected component.")
-
-    if args.average_intersection:
-        avg_fun = None
-    elif args.inverse_intersection:
-        avg_fun = lambda c, w: sum(1./asarray(c))
-    else:
-        avg_fun = lambda c, w: min(c)
-
-    t0 = time.time()
-    tree, dual, filtr = hierarchical_decomposition(con[0],
-            avg_fun=avg_fun, remove_outer=not args.no_external_loops,
-            filtration_steps=args.filtration_steps)
-
-    print(("Decomp. took {}s.".format(time.time() - t0)))
-    print(("Number of loops:", dual.number_of_nodes()))
-    print(("Number of tree nodes:", tree.number_of_nodes()))
-
-    if args.save != "":
-        print("Saving file.")
-
-        SAVE_FORMAT_VERSION = 5
-        sav = {'version':SAVE_FORMAT_VERSION, \
-                'leaf':leaf, 'tree':tree, 'dual':dual, \
-                'filtration':filtr, 'pruned':pruned, \
-                'removed-edges':removed_edges}
-
-        storage.save(sav, args.save)
-
-    print("Done.")
-
-    if args.plot:
-        plt.figure()
-        plot.draw_leaf(leaf, "Input leaf data")
-        plt.figure()
-        plot.draw_leaf(pruned, "Pruned leaf data and dual graph")
-        plot.draw_dual(dual)
-        plt.figure()
-        plot.draw_tree(tree)
-        plt.figure()
-        plot.draw_filtration(filtr)
-        plt.show()

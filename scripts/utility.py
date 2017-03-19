@@ -17,6 +17,11 @@ from scripts.cycle_basis import shortest_cycles
 
 
 def cycle_basis(G):
+    """
+    Return a list of lists containing node IDs in areole cycles. The NET
+    function returns Cycle class objects, we have to extract the node
+    path from these objects.
+    """
     cycle_objects = shortest_cycles(G)
     outer_loop = max([(c.area(), c) for c in cycle_objects])[1]
     cycle_objects.remove(outer_loop)
@@ -24,17 +29,13 @@ def cycle_basis(G):
 
 
 def clean_graph(graph):
-    #  print("Removing disconnected parts")
-    #  con = sorted_connected_components(graph)
-    #  assert len(con) != 0, 'Graph is empty!'
-
-    #  graph = con[0]
-
-    print("Removing nodes with same positions.")
-    for u, v in graph.edges():
-        if np.all(graph.node[u]['pos'] == graph.node[v]['pos']):
-            graph.remove_edge(u, v)
-
+    """
+    Clean a graph by
+    (a) removing intersecting edges,
+    (b) pruning tree like structures,
+    (c) removing collinear edges
+    (d) choosing the largest connected component to remove artifacts.
+    """
     print("Removing intersecting edges.")
     remove_intersecting_edges(graph)
 
@@ -56,7 +57,9 @@ def clean_graph(graph):
 
 def graph_from_data(node_path, edge_path):
     """
-    Create networkX graph for given node and edge files.
+    Create network graph for given node and edge files. The graph is set to
+    be the largest connected component to remove artifacts. Remove 'ghos
+    nodes', i.e. nodes which lie ontop of other nodes.
     """
     # Extract network id from path
     network_id = os.path.basename(node_path)
@@ -106,14 +109,19 @@ def graph_from_data(node_path, edge_path):
     print("Removing disconnected parts")
     con = sorted_connected_components(G)
     assert len(con) != 0, 'Graph is empty!'
-
     G = con[0]
+
+    print("Removing nodes with same positions.")
+    for u, v in G.edges():
+        if np.all(G.node[u]['pos'] == G.node[v]['pos']):
+            G.remove_edge(u, v)
+
     return network_id, G
 
 
 def graph_generator(skip_file=''):
     """
-    Iterate over all graphs.
+    Iterate over all network files and return the graphs.
     """
     data_list = []
     for subset in ['BronxA', 'BronxB']:
@@ -143,16 +151,13 @@ def graph_generator(skip_file=''):
                     if network_id in content:
                         continue
 
-            # Everytime the next element of the generator is accessed, the
-            # current step in the loop is executed. After the 'yield' line is
-            # finished, the generator will pause until the next element is
-            # accessed again. So everytime we access the next element, we
-            # raise i to i+1, get the paths for the corresponding files and
-            # generate the graph for these files.
             yield graph_from_data(node_path, edge_path)
 
 
 def save_feature(feature_function, skip_existing=True, clean=False):
+    """
+    Save the feature values of a given feature function for all graphs.
+    """
     feature_name = feature_function.__name__
     if clean:
         file_path = 'features/{}_clean.txt'.format(feature_name)
@@ -217,10 +222,16 @@ for k in [1, 2]:
 
 
 def species_from_id(network_id):
+    """
+    Return the species for the given network ID.
+    """
     return species_dict[network_id[:10]]
 
 
 def read_features():
+    """
+    Read the saved feature files.
+    """
     feature_names = [
         'topological_length',
         'nesting_numbers',
@@ -261,7 +272,7 @@ def read_features():
 
 def find_factor(a, product=100):
     """
-    Helper function for the grid generation.
+    For a given number a, find the smallest number b so that a * b >= product.
     """
     current_product = a
     b = 1
@@ -312,10 +323,6 @@ class CellGrid():
         self.node_positions = nx.get_node_attributes(G, 'pos')
 
         self.find_optimal_cells(n_cells_desired, min_cell_length, fill_ratio_threshold)
-        # BUG: some nodes exist multiple times in a cell after
-        # remove_partially_filled_cells is called. This good be a consequence
-        # of the wrong cycle basis (seems work fine now with correct
-        # cycle basis)
         self.remove_partially_filled_cells(fill_ratio_threshold)
         self.repair_cycles()
 
@@ -373,9 +380,6 @@ class CellGrid():
         cells_to_keep = []
         cell_length = 1e20
         min_n_cells = n_cells_desired
-        # FIXME: The vein lengths seem to be much to big, the loop always stops
-        # after the first iteration (this is due to them being calculated with
-        # the wrong cycle basis!)
         while len(cells_to_keep) < n_cells_desired and cell_length > min_cell_length:
             # Reduce cell size until the desired number of cells is reached and
             # the resulting grid fits almost onto the enscribing rectangle.

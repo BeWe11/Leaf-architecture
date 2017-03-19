@@ -7,7 +7,8 @@ from matplotlib import pyplot as plt
 
 from scripts.decomposer import hierarchical_decomposition
 
-from scripts.analyzer import analyze_tree
+from scripts.analyzer import analyze_tree, topological_length_for_edge, \
+                             weighted_line_graph
 from scripts.utility import cycle_basis
 
 
@@ -20,7 +21,6 @@ def polygon_area(x, y):
     return 0.5 * (np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))))
 
 
-#Function recieves the nx.Graph generated
 def get_total_leaf_area(G, cycles):
     """
     This function calculates each invidual basis cycle area, adds all the areas and
@@ -45,7 +45,7 @@ def get_total_leaf_area(G, cycles):
 def get_total_vein_length(G):
     sum_vein = 0
     for edge in G.edges():
-        sum_vein += G.get_edge_data(*edge)['length']   #With * python unpacks the tuple
+        sum_vein += G.get_edge_data(*edge)['length']
     return sum_vein
 
 
@@ -68,7 +68,7 @@ def vein_density(G, cycles):
 
 def areole_area(G, cycles):
     total_leaf_area = get_total_leaf_area(G, cycles)
-    return total_leaf_area / len(cycles)   #It is mean areole area
+    return total_leaf_area / len(cycles)
 
 
 def areole_density(G, cycles):
@@ -88,93 +88,18 @@ def weighted_vein_thickness(G, cycles):
     total_vein_length = get_total_vein_length(G)
     individual_weighted_vein_thickness = 0
     for edge in G.edges():
-        individual_weighted_vein_thickness += G.get_edge_data(*edge)['radius']*G.get_edge_data(*edge)['length']  #vein_thickness*vein_length
+        individual_weighted_vein_thickness += G.get_edge_data(*edge)['radius']*G.get_edge_data(*edge)['length']
     weighted_vein_thickness = individual_weighted_vein_thickness / total_vein_length
     return weighted_vein_thickness
 
 
 ### TOPOLOGICAL ###
 
-def weighted_line_graph(G, cycles, average=False):
-    """ Return a line graph of G where edge attributes are propagated
-    properly. Node attributes are ignored.
-    If average is set to True, perform an averaging over
-    conductivities.
-    """
-    line_graph = nx.line_graph(G)
-    line_graph.add_nodes_from((tuple(sorted((u, v))), d)
-            for u, v, d in G.edges_iter(data=True))
-
-    # average
-    if average:
-        new_node_conds = {}
-        for n, d in line_graph.nodes_iter(data=True):
-            neighbor_conds = mean([line_graph.node[m]['conductivity']
-                    for m in line_graph.neighbors(n)])
-            new_node_conds[n] = 0.5*(d['conductivity'] +
-                    neighbor_conds)
-
-        for n, v in new_node_conds.items():
-            line_graph.node[n]['conductivity'] = v
-
-    return line_graph
-
-def topological_length_alternative(line_graph, e, G, mode='lt'):
-    """ Find the topological length associated to node e
-    in the line graph. Topological length is defined as
-    in the comment to topological_length_statistics.
-    """
-    length = 0
-    length_real = 0
-
-    current_width = line_graph.node[e]['conductivity']
-    current_node = e
-    edges =  [e]
-
-    if mode == 'lt':
-        comp = lambda x, y: x < y
-    elif mode == 'leq':
-        comp = lambda x, y: x <= y
-
-    while True:
-        # find neighboring edges
-        neighs_below = [(line_graph.node[n]['conductivity'], n)
-               for n in line_graph.neighbors(current_node)
-               if comp(line_graph.node[n]['conductivity'], current_width)
-               and not n in edges]
-
-        # edges in 2-neighborhood
-        #neighs_below_2 = [(line_graph.node[n]['conductivity'], n)
-        #       for n in decomposer.knbrs(line_graph, current_node, 2)
-        #       if line_graph.node[n]['conductivity'] < current_width]
-
-        length += 1
-        length_real += G[current_node[0]][current_node[1]]['weight']
-
-        # we're at the end
-        if len(neighs_below) == 0:
-            break
-
-        # use best bet from both 2 and 1 neighborhood
-        max_neighs = max(neighs_below)
-
-        current_width, current_node = max_neighs
-        edges.append(current_node)
-
-    # plot edges
-    #print edges
-    #plt.sca(self.leaf_subplot)
-    #plot.draw_leaf_raw(G, edge_list=edges, color='r')
-    #raw_input()
-
-    return length, length_real, edges
-
-
 def topological_length(G, cycles):
     total_length = 0
     line_graph = weighted_line_graph(G)
     for edge in line_graph.nodes():
-        length, _, _ = topological_length_alternative(line_graph, edge, G)
+        length, _, _ = topological_length_for_edge(line_graph, edge, G)
         total_length += length
     return total_length / (len(line_graph.nodes()))
 
@@ -184,7 +109,8 @@ def nesting_numbers(G, cycles):
     Calculate nesting number for a *cleaned graph*, which means that
     'clean_graph' has been applied to G.
     """
-    tree, _, _ = hierarchical_decomposition(G, cycles)
+    #  tree, _, _ = hierarchical_decomposition(G, cycles)
+    tree, _, _ = hierarchical_decomposition(G)
     tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
     tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext = analyze_tree(tree)
 

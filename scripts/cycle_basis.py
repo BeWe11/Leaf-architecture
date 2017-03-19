@@ -1,33 +1,16 @@
-#!/usr/bin/env python
-
 """
     cycle_basis.py
 
     functions for calculating the cycle basis of a graph
+
+    2017 adapted by Benjamin Weigang and Alan Preciado
 """
-import numpy
 from numpy import *
-#import numpy as np
 import networkx as nx
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.path import Path
-
-if matplotlib.__version__ >= '1.3.0':
-    from matplotlib.path import Path
-else:
-    from matplotlib import nxutils
-
 from itertools import chain
-from itertools import filterfalse
-
-from itertools import tee
-
 from collections import defaultdict
-
 import time
-
 from .helpers import *
 
 class Cycle():
@@ -236,19 +219,11 @@ def traverse_graph(G, start, nextn):
     prev = start
     cur = nextn
 
-    numpy.seterr(invalid='raise')
-
     while cur != start:
         cur_coords = array([G.node[cur]['pos'][0], G.node[cur]['pos'][1]])
         # We ignore all neighbors we alreay visited to avoid multiple loops
 
         neighs = [n for n in G.neighbors(cur) if n != prev and n != cur]
-        #print(neighs)
-        for m in neighs:
-            if G.node[m]['pos'] == G.node[cur]['pos']:
-                neighs.remove(m)
-        #        print(G.node[m]['pos'], G.node[cur]['pos'])
-
         edges_visited.append((prev, cur))
         nodes_visited.append(cur)
         coords.append(cur_coords)
@@ -299,19 +274,6 @@ def traverse_graph(G, start, nextn):
 
     return nodes_visited, edges_visited, array(coords)
 
-def cycle_mtp_path(cycle):
-    """ Returns a matplotlib Path object describing the cycle.
-    """
-    # Set up polygon
-    verts = zeros((cycle.coords.shape[0] + 1, cycle.coords.shape[1]))
-    verts[:-1,:] = cycle.coords
-    verts[-1,:] = cycle.coords[0,:]
-
-    codes = Path.LINETO*ones(verts.shape[0])
-    codes[0] = Path.MOVETO
-    codes[-1] = Path.CLOSEPOLY
-
-    return Path(verts, codes)
 
 def outer_loop(G, cycles):
     """ Detects the boundary loop in the set of fundamental cycles
@@ -344,8 +306,6 @@ def shortest_cycles(G):
     mst = nx.minimum_spanning_tree(G, weight=None)
     for u, v in G.edges():
         if not mst.has_edge(u, v):
-            if G.node[u]['pos'] == G.node[v]['pos']:
-                continue
 
             # traverse cycle in both directions
             path, edges, coords = traverse_graph(G, u, v)
