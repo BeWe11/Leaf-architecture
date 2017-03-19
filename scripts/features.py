@@ -109,7 +109,6 @@ def nesting_numbers(G, cycles):
     Calculate nesting number for a *cleaned graph*, which means that
     'clean_graph' has been applied to G.
     """
-    #  tree, _, _ = hierarchical_decomposition(G, cycles)
     tree, _, _ = hierarchical_decomposition(G)
     tree_asymmetry_weighted, tree_asymmetry_weighted_no_ext, \
     tree_asymmetry_unweighted, tree_asymmetry_unweighted_no_ext = analyze_tree(tree)
